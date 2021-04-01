@@ -3,7 +3,7 @@ import tqdm
 from tqdm import tqdm
 
 
-def build_data(units, time, x, max_time, is_test, pad_value, **kwargs):
+def build_data(units, time, x, max_time, is_test, mask_value, n_units, **kwargs):
     """
     This function prepares the data by segmenting it into subsequences of length max_time
     by also padding, by pad_value, the time-steps when there is no data.
@@ -13,7 +13,7 @@ def build_data(units, time, x, max_time, is_test, pad_value, **kwargs):
     :param x: sensor values (time-series)
     :param max_time: maximum lookback
     :param is_test: (boolean) test set or train set
-    :param pad_value: value to pad the sequences
+    :param mask_value: value to pad the sequences
     :param **kwargs: additional arguments that might be used for other datasets
     :return: (ndarray) y. y[0] will be time remaining to an event, y[1] will be event indicator
     """
@@ -27,25 +27,24 @@ def build_data(units, time, x, max_time, is_test, pad_value, **kwargs):
     # A full history of sensor readings to date for each x
     out_x = []
 
-    n_units = len(units.unique())
     for i in tqdm(range(n_units)):
         # When did the engine fail? (Last day + 1 for train data, irrelevant for test.)
-        max_engine_time = int(np.max(time[units == i])) + 1
+        max_unit_time = int(np.max(time[units == i])) + 1
 
         if is_test:
-            start = max_engine_time - 1
+            start = max_unit_time - 1
         else:
             start = 0
 
         this_x = []
 
-        for j in range(start, max_engine_time):
+        for j in range(start, max_unit_time):
             engine_x = x[units == i]
 
-            out_y.append(np.array((max_engine_time - j, 1), ndmin=2))
+            out_y.append(np.array((max_unit_time - j, 1), ndmin=2))
 
             xtemp = np.zeros((1, max_time, d))
-            xtemp += pad_value
+            xtemp += mask_value
 
             xtemp[:, max_time - min(j, 99) - 1:max_time, :] = engine_x[max(0, j - max_time + 1):j + 1, :]
             this_x.append(xtemp)
