@@ -56,3 +56,4 @@ def network(train_X, train_y, test_X, test_y, mask_value):
               workers=32)
 
     return model
+

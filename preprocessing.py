@@ -41,7 +41,7 @@ def build_data(units, time, x, max_time, is_test, mask_value, n_units, **kwargs)
         for j in range(start, max_unit_time):
             engine_x = x[units == i]
 
-            out_y.append(np.array((max_unit_time - j, 1), ndmin=2))
+            out_y.append(np.array((max_unit_time - j, 1), ndmin=2))  # linear RUL target
 
             xtemp = np.zeros((1, max_time, d))
             xtemp += mask_value
@@ -54,3 +54,4 @@ def build_data(units, time, x, max_time, is_test, mask_value, n_units, **kwargs)
     out_x = np.concatenate(out_x)
     out_y = np.concatenate(out_y)
     return out_x, out_y
+
