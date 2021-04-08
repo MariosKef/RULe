@@ -3,7 +3,7 @@ import tqdm
 from tqdm import tqdm
 
 
-def build_data(units, time, x, max_time, is_test, mask_value, n_units, **kwargs):
+def build_data(units, time, x, max_time, is_test, mask_value, **kwargs):
     """
     This function prepares the data by segmenting it into subsequences of length max_time
     by also padding, by pad_value, the time-steps when there is no data.
@@ -26,8 +26,9 @@ def build_data(units, time, x, max_time, is_test, mask_value, n_units, **kwargs)
 
     # A full history of sensor readings to date for each x
     out_x = []
-
-    for i in tqdm(range(n_units)):
+    n_units = set(units)
+    # print(n_units)
+    for i in tqdm(n_units):
         # When did the engine fail? (Last day + 1 for train data, irrelevant for test.)
         max_unit_time = int(np.max(time[units == i])) + 1
 
