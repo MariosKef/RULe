@@ -44,9 +44,11 @@ def weibull_loglik_continuous(y_true, ab_pred, name=None):
 
     """
     y_ = y_true[:, 0]
+    y_ = tf.cast(y_, tf.float32)
     u_ = y_true[:, 1]
+    u_ = tf.cast(u_, tf.float32)
     a_ = ab_pred[:, 0]
     b_ = ab_pred[:, 1]
 
-    ya = (y_ + 1e-35) / a_
+    ya = (y_ + k.epsilon()) / a_
     return -1 * k.mean(u_ * (k.log(b_) + b_ * k.log(ya)) - k.pow(ya, b_))
