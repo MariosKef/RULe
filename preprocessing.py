@@ -47,7 +47,7 @@ def build_data(units, time, x, max_time, is_test, mask_value, **kwargs):
             xtemp = np.zeros((1, max_time, d))
             xtemp += mask_value
 
-            xtemp[:, max_time - min(j, 99) - 1:max_time, :] = engine_x[max(0, j - max_time + 1):j + 1, :]
+            xtemp[:, max_time - min(j, max_time - 1) - 1:max_time, :] = engine_x[max(0, j - max_time + 1):j + 1, :]
             this_x.append(xtemp)
 
         this_x = np.concatenate(this_x)

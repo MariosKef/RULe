@@ -15,6 +15,7 @@ def weibull_loglik_discrete(y_true, ab_pred, name=None):
     """
     y_ = y_true[:, 0]
     y_ = tf.cast(y_, tf.float32)
+
     u_ = y_true[:, 1]
     u_ = tf.cast(u_, tf.float32)
     a_ = ab_pred[:, 0]
