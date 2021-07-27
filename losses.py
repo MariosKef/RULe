@@ -1,55 +1,88 @@
+# Tensorflow
 import tensorflow as tf
 from tensorflow.keras import backend as k
+from tensorflow import keras
 
 
-def weibull_loglik_discrete(y_true, ab_pred, name=None):
+def weibull_ttf(y, u, a, b):
+    mttf = a * tf.exp(tf.math.lgamma(1 + 1 / b))
+
+    return k.square(y - mttf)
+
+
+def loglik_discrete(y, u, a, b, epsilon=k.epsilon()):
+    hazard0 = k.pow((y + epsilon) / a, b)
+    hazard1 = k.pow((y + 1.0) / a, b)
+
+    loglikelihoods = u * \
+                     k.log(k.exp(hazard1 - hazard0) - (1.0 - epsilon)) - hazard1
+    return loglikelihoods
+
+
+def loglik_continuous(y, u, a, b, epsilon=k.epsilon()):
+    ya = (y + epsilon) / a
+
+    loglikelihoods = u * (k.log(b) + b * k.log(ya)) - k.pow(ya, b)
+    return loglikelihoods
+
+
+class CustomLoss(keras.losses.Loss):
+    """ Creates a keras WTTE-loss function.
+        - Usage
+            :Example:
+            .. code-block:: python
+               loss = wtte.Loss(kind='discrete').loss_function
+               model.compile(loss=loss, optimizer=RMSprop(lr=0.01))
+               # And with masking:
+               loss = wtte.Loss(kind='discrete',reduce_loss=False).loss_function
+               model.compile(loss=loss, optimizer=RMSprop(lr=0.01),
+                              sample_weight_mode='temporal')
+        .. note::
+            With masking keras needs to access each loss-contribution individually.
+            Therefore we do not sum/reduce down to scalar (dim 1), instead return a 
+            tensor (with reduce_loss=False).
+        :param kind:  One of 'discrete' or 'continuous'
+        :param reduce_loss: 
+        :param clip_prob: Clip likelihood to [log(clip_prob),log(1-clip_prob)]
+        :param regularize: Deprecated.
+        :param location: Deprecated.
+        :param growth: Deprecated.
+        :type reduce_loss: Boolean
     """
 
-    Discrete log-likelihood for Weibull hazard function on censored survival data
-    For math, see https://ragulpr.github.io/assets/draft_master_thesis_martinsson_egil_wtte_rnn_2016.pdf (Page 35)
+    def __init__(self,
+                 kind,
+                 reduce_loss=False):
+        super().__init__()
+        self.kind = kind
+        self.reduce_loss = reduce_loss
 
-    :param y_true: y_true is a (samples, 2) tensor containing time-to-event (y), and an event indicator (u)
-    :param ab_pred: ab_pred is a (samples, 2) tensor containing predicted Weibull alpha (a) and beta (b) parameters
-    :param name: name of the loss
-    :return:
-    """
-    y_ = y_true[:, 0]
-    y_ = tf.cast(y_, tf.float32)
+    def call(self, y_true, y_pred):
 
-    u_ = y_true[:, 1]
-    u_ = tf.cast(u_, tf.float32)
-    a_ = ab_pred[:, 0]
-    b_ = ab_pred[:, 1]
+        #         y, u = tf.unstack(y_true, axis=-1) # (uncomment when adding event)
+        y = tf.cast(y_true, tf.float32)  # (replace y_true -> y when adding event)
+        y = tf.reshape(y, [-1])  # (coment when adding event)
+        #         u = tf.cast(u, tf.float32) # (uncomment when adding event)
+        u = tf.constant(1, dtype=tf.float32)
+        a, b = tf.unstack(y_pred, axis=-1)
 
-    hazard0 = k.pow((y_ + k.epsilon()) / a_, b_)
-    hazard1 = k.pow((y_ + 1.0) / a_, b_)
+        if self.kind == 'discrete':
+            loglikelihoods = loglik_discrete(y, u, a, b)
+        elif self.kind == 'continuous':
+            loglikelihoods = loglik_continuous(y, u, a, b)
+        elif self.kind == 'mttf':
+            loglikelihoods = weibull_ttf(y, u, a, b)
 
-    return -1 * k.mean(u_ * k.log(k.exp(hazard1 - hazard0) - (1.0 - k.epsilon())) - hazard1)
+        if self.reduce_loss:
+            loss = -1.0 * (k.mean(loglikelihoods, axis=-1))  # apparently this returns the same as the case below
+        else:
+            loss = -1.0 * loglikelihoods
 
+        return loss
 
-"""
-    Not used for this model, but included in case somebody needs it
-    For math, see https://ragulpr.github.io/assets/draft_master_thesis_martinsson_egil_wtte_rnn_2016.pdf (Page 35)
-"""
+    def get_config(self):
+        return {"kind": self.kind}
 
-
-def weibull_loglik_continuous(y_true, ab_pred, name=None):
-    """
-    Continuous log-likelihood for Weibull hazard function on censored survival data
-    For math, see https://ragulpr.github.io/assets/draft_master_thesis_martinsson_egil_wtte_rnn_2016.pdf (Page 35)
-
-    :param y_true: y_true is a (samples, 2) tensor containing time-to-event (y), and an event indicator (u)
-    :param ab_pred: ab_pred is a (samples, 2) tensor containing predicted Weibull alpha (a) and beta (b) parameters
-    :param name: name of the loss
-    :return:
-
-    """
-    y_ = y_true[:, 0]
-    y_ = tf.cast(y_, tf.float32)
-    u_ = y_true[:, 1]
-    u_ = tf.cast(u_, tf.float32)
-    a_ = ab_pred[:, 0]
-    b_ = ab_pred[:, 1]
-
-    ya = (y_ + k.epsilon()) / a_
-    return -1 * k.mean(u_ * (k.log(b_) + b_ * k.log(ya)) - k.pow(ya, b_))
+    @classmethod
+    def from_config(cls, config):
+        return cls(**config)

@@ -1,59 +1,58 @@
 from tensorflow.keras import backend as k
 from tensorflow.keras import callbacks
 from tensorflow.keras.callbacks import History
-from tensorflow.keras.layers import Dense, Activation, Masking, GRU
-from tensorflow.keras.models import Sequential
+from tensorflow import keras
 from tensorflow.keras.optimizers import Adam
 
-from activations import activate
-from losses import weibull_loglik_discrete
+from activations import Activate
+from losses import CustomLoss
+
 import numpy as np
 
 
-def network(train_X, train_y, test_X, test_y, mask_value):
-
-    tte_mean_train = np.nanmean(train_y[:, 0])
-    mean_u = np.nanmean(train_y[:, 1])
-
-    # Initialization value for alpha-bias
-    init_alpha = -1.0 / np.log(1.0 - 1.0 / (tte_mean_train + 1.0))
-    init_alpha = init_alpha / mean_u
-    print('tte_mean_train', tte_mean_train, 'init_alpha: ', init_alpha, 'mean uncensored train: ', mean_u)
-
+def network_model(train_X, train_y, test_X, test_y, net_cfg, cfg):
     k.set_epsilon(1e-10)
     history = History()
     nan_terminator = callbacks.TerminateOnNaN()
+    reduce_lr = callbacks.ReduceLROnPlateau(monitor='val_loss')
+    early_stopping = callbacks.EarlyStopping(patience=10)
+    #     tensorboard = callbacks.TensorBoard(log_dir = './logs_2D')
 
-    # reduce_lr = callbacks.ReduceLROnPlateau(monitor='loss',
-    #                                         factor=0.5,
-    #                                         patience=50,
-    #                                         verbose=0,
-    #                                         mode='auto',
-    #                                         epsilon=0.0001,
-    #                                         cooldown=0,
-    #                                         min_lr=1e-8)
+    window = train_X.shape[1]
+    n_features = train_X.shape[2]
 
-    n_features = train_X.shape[-1]
+    inputs = keras.Input(shape=(window, n_features))
+    masking_layer = keras.layers.Masking(mask_value=cfg['mask_value'])(inputs)
 
-    # Start building our model
-    model = Sequential()
-    # Mask parts of the lookback period that are all zeros (i.e., unobserved) so they don't skew the model
-    model.add(Masking(mask_value=mask_value, input_shape=(None, n_features)))
-    model.add(GRU(20, activation='tanh', recurrent_dropout=0.25, return_sequences=True))
-    model.add(GRU(10, activation='tanh', recurrent_dropout=0.25))
-    model.add(Dense(2))
-    model.add(Activation(activate))
+    # recurrent layers
+    if net_cfg['num_rec'] > 1:
+        for _ in np.arange(net_cfg['num_rec']-1):
+            masking_layer = keras.layers.GRU(net_cfg['neuron'], activation=net_cfg['activation'],
+                                    dropout=net_cfg['dropout'],
+                                    ecurrent_dropout=net_cfg['recurrent_dropout'],
+                                    return_sequences=True)(masking_layer)
+    gru_last = keras.layers.GRU(net_cfg['neuron'], activation=net_cfg['activation'],
+                                dropout=net_cfg['dropout'],
+                                ecurrent_dropout=net_cfg['recurrent_dropout'],
+                                return_sequences=False)(masking_layer)
 
-    # Use the discrete log-likelihood for Weibull survival data as our loss function
-    model.compile(loss=weibull_loglik_discrete, optimizer=Adam(lr=.01, clipvalue=0.5))
+    dense_1 = keras.layers.Dense(2)(gru_last)
+    custom_activation = Activate()
+    outputs = keras.layers.Activation(custom_activation)(dense_1)
+
+    model = keras.Model(inputs=inputs, outputs=outputs, name="weibull_params")
+
+    # rmse = tf.keras.metrics.RootMeanSquaredError()
+    model.compile(loss=CustomLoss(kind='continuous', reduce_loss=True), optimizer=Adam(lr=.01,
+                                                                                       clipvalue=0.5))
+    # model.summary() uncomment for debugging
 
     model.fit(train_X, train_y,
-              epochs=20,
-              batch_size=100,
-              verbose=1,
+              epochs=net_cfg['epochs'],
+              batch_size=net_cfg['batch_size'],
               validation_data=(test_X, test_y),
-              callbacks=[nan_terminator, history],
+              verbose=1,
+              callbacks=[nan_terminator, history, reduce_lr, early_stopping],  # , tensorboard
               workers=32)
 
-    return model
-
+    return model, history
