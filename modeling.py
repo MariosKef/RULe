@@ -9,7 +9,7 @@ from losses import CustomLoss
 
 import numpy as np
 
-epochs = 30
+epochs = 5
 batches = 64
 
 

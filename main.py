@@ -20,7 +20,7 @@ def main():
     # hyperparameter configuration
     max_time = OrdinalSpace([10, 100], 'max_time')  # maximum lookback
     lr_rate = ContinuousSpace([1e-4, 1.0e-0], 'lr')  # learning rate
-    num_rec = OrdinalSpace([2, 10], 'num_rec')  # maximum number of recurrent layers
+    num_rec = OrdinalSpace([2, 3], 'num_rec')  # maximum number of recurrent layers
 
     activations = ["tanh", "sigmoid"]  # activations of recurrent layers
     final_activations = ['softplus', 'exp']  # output activations
@@ -39,7 +39,12 @@ def main():
     for i in range(len(names)):
         cfg[names[i]] = values[0][i]
 
-    net_cfg = cfg
+    net_cfg={'max_time': 100, 'lr': 0.01, 'num_rec': 3, 'neuron_0': 100, 'activation_0': 'tanh', 'dropout_0': 0.25, 'recurrent_dropout_0': 0.25, 
+    'neuron_1': 50, 'activation_1': 'tanh', 'dropout_1': 0.25, 'recurrent_dropout_1': 0.25, 
+    'neuron_2': 20, 'activation_2': 'tanh', 'dropout_2': 0.25, 'recurrent_dropout_2': 0.25, 
+    'final_activation_0': 'exp', 'final_activation_1': 'softplus'}
+
+    print(net_cfg)
 
     return net_cfg
 

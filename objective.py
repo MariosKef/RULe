@@ -22,7 +22,7 @@ from modeling import network
 from preprocessing import build_data
 
 cfg = {'cv': 10, 'shuffle': True,
-       'random_state': 2021,
+       'random_state': 21,
        'mask_value': -99,
        'reps': 30}
 
@@ -33,7 +33,15 @@ def weibull_mean(alpha, beta):
 
 def obj_function(net_cfg):
 
+    try:
+        del model
+    except NameError:
+        pass
+
+    k.clear_session()
+
     train_x_orig, feature_cols = load_data()
+    print(train_x_orig.shape)
 
     kf = KFold(n_splits=cfg['cv'], shuffle=cfg['shuffle'], random_state=cfg['random_state'])
 
@@ -120,7 +128,7 @@ def obj_function(net_cfg):
                                     original_data=X_test_or, label='nonlinear')
 
         # only for debugging
-        # print('train_x', train_x.shape, 'train_y', train_y.shape, 'test_x', test_x.shape, 'test_y', test_y.shape)
+        print('train_x', train_x.shape, 'train_y', train_y.shape, 'test_x', test_x.shape, 'test_y', test_y.shape)
 
         # training
         model, history = network(train_x, train_y, test_x, test_y, net_cfg, cfg)
@@ -236,8 +244,8 @@ def obj_function(net_cfg):
         else:
             results.to_csv('./' + file, mode='w', index=False, header=True)
 
-        del model
         k.clear_session()
+        del model
 
     end = time.time()
     print(f'Elapsed time: {(end - start) / 60} minutes')

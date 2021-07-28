@@ -28,7 +28,9 @@ class Activate(keras.layers.Layer):
         """
 
         a, b = tf.unstack(ab, axis=-1)
+        print('f1: k.'+self.func1+"(a)")
         a = eval('k.'+self.func1+"(a)")  # a = k.exp(a)
+        print('f2: k.'+self.func2+"(b)")
         b = eval('k.'+self.func2+"(b)")  # b = k.softplus(b)
 
         x = k.stack([a, b], axis=-1)
