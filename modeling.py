@@ -10,7 +10,7 @@ from losses import CustomLoss
 import numpy as np
 
 
-def network_model(train_X, train_y, test_X, test_y, net_cfg, cfg):
+def network(train_X, train_y, test_X, test_y, net_cfg, cfg):
     k.set_epsilon(1e-10)
     history = History()
     nan_terminator = callbacks.TerminateOnNaN()

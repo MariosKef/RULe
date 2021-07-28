@@ -18,7 +18,7 @@ from tensorflow.keras import backend as k
 
 # utilities
 from data import load_data
-from modeling import network_model
+from modeling import network
 from preprocessing import build_data
 
 
@@ -118,7 +118,7 @@ def obj_function(cfg, net_cfg):
         # print('train_x', train_x.shape, 'train_y', train_y.shape, 'test_x', test_x.shape, 'test_y', test_y.shape)
 
         # training
-        model, history = network_model(train_x, train_y, test_x, test_y, net_cfg, cfg)
+        model, history = network(train_x, train_y, test_x, test_y, net_cfg, cfg)
 
         plt.plot(history.history['loss'], label='training')
         plt.plot(history.history['val_loss'], label='validation')
