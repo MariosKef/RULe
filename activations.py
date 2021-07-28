@@ -1,6 +1,7 @@
 from tensorflow.keras import backend as k
 from tensorflow import keras
 import tensorflow as tf
+import importlib
 
 
 class Activate(keras.layers.Layer):
@@ -15,10 +16,10 @@ class Activate(keras.layers.Layer):
                model.add(Activation(wtte_activation))
     """
 
-    def __init__(self, init_alpha=1.0, max_beta_value=1.0):
+    def __init__(self, net_cfg):
         super().__init__()
-        self.init_alpha = init_alpha
-        self.max_beta_value = max_beta_value
+        self.func1 = net_cfg['final_activation_0']
+        self.func2 = net_cfg['final_activation_1']
 
     def call(self, ab):
         """ (Internal function) Activation wrapper
@@ -27,36 +28,15 @@ class Activate(keras.layers.Layer):
         """
 
         a, b = tf.unstack(ab, axis=-1)
-        #         print(a)
-        #         print(b)
-
-        #         a = k.exp(a)
-        #         b = k.softplus(b)
-
-        #         print(a)
-        #         print(b)
-
-        # Implicitly initialize alpha:
-        a = self.init_alpha * k.exp(a)
-
-        #         if self.max_beta_value > 1.05:  # some value >>1.0
-        #             # shift to start around 1.0
-        #             # assuming input is around 0.0
-        #             _shift = np.log(self.max_beta_value - 1.0)
-
-        #             b = b - _shift
-
-        b = k.exp(b)  # self.max_beta_value * k.sigmoid(b) # this was affecting the max value of beta
-
-        #         a = a * tf.exp(tf.math.lgamma(1 + 1/b))
-        #         b = tf.repeat(1.0, tf.size(a))
+        a = eval('k.'+self.func1+"(a)")  # a = k.exp(a)
+        b = eval('k.'+self.func2+"(b)")  # b = k.softplus(b)
 
         x = k.stack([a, b], axis=-1)
 
         return x
 
     def get_config(self):
-        return {"init_alpha": self.init_alpha, "max_beta_value": self.max_beta_value}
+        return {"func1": self.func1, "func2": self.func2}
 
     @classmethod
     def from_config(cls, config):

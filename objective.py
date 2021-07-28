@@ -21,12 +21,17 @@ from data import load_data
 from modeling import network
 from preprocessing import build_data
 
+cfg = {'cv': 10, 'shuffle': True,
+       'random_state': 2021,
+       'mask_value': -99,
+       'reps': 30}
+
 
 def weibull_mean(alpha, beta):
     return alpha * math.gamma(1 + 1/beta)
 
 
-def obj_function(cfg, net_cfg):
+def obj_function(net_cfg):
 
     train_x_orig, feature_cols = load_data()
 
@@ -120,10 +125,11 @@ def obj_function(cfg, net_cfg):
         # training
         model, history = network(train_x, train_y, test_x, test_y, net_cfg, cfg)
 
-        plt.plot(history.history['loss'], label='training')
-        plt.plot(history.history['val_loss'], label='validation')
-        plt.title('loss')
-        plt.legend()
+        # For debugging
+        # plt.plot(history.history['loss'], label='training')
+        # plt.plot(history.history['val_loss'], label='validation')
+        # plt.title('loss')
+        # plt.legend()
 
         # predicting the rul on the train fold
         train_predict_1 = []
@@ -199,11 +205,11 @@ def obj_function(cfg, net_cfg):
                                                              'std_beta']].apply(
             lambda row: weibull_mean(row[0] - 1.96 * row[2] / np.sqrt(cfg['reps']),
                                      row[1] - 1.96 * row[3] / np.sqrt(cfg['reps'])), axis=1)
-        #  general administration
+        # General administration
         train_all.append(train_results_df)
         test_all.append(test_results_df)
 
-        # performance evaluation
+        # Performance evaluation
         # train:
         rmse_train.append(np.sqrt(mean_squared_error(train_results_df['predicted_mu'], train_results_df['T'])))
         mae_train.append((mean_absolute_error(train_results_df['predicted_mu'], train_results_df['T'])))

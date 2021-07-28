@@ -9,6 +9,9 @@ from losses import CustomLoss
 
 import numpy as np
 
+epochs = 30
+batches = 64
+
 
 def network(train_X, train_y, test_X, test_y, net_cfg, cfg):
     k.set_epsilon(1e-10)
@@ -26,30 +29,31 @@ def network(train_X, train_y, test_X, test_y, net_cfg, cfg):
 
     # recurrent layers
     if net_cfg['num_rec'] > 1:
-        for _ in np.arange(net_cfg['num_rec']-1):
-            masking_layer = keras.layers.GRU(net_cfg['neuron'], activation=net_cfg['activation'],
-                                    dropout=net_cfg['dropout'],
-                                    ecurrent_dropout=net_cfg['recurrent_dropout'],
+        for i in np.arange(net_cfg['num_rec']-1):
+            masking_layer = keras.layers.GRU(net_cfg['neuron_'+str(i)], activation=net_cfg['activation_'+str(i)],
+                                    dropout=net_cfg['dropout_'+str(i)],
+                                    recurrent_dropout=net_cfg['recurrent_dropout_'+str(i)],
                                     return_sequences=True)(masking_layer)
-    gru_last = keras.layers.GRU(net_cfg['neuron'], activation=net_cfg['activation'],
-                                dropout=net_cfg['dropout'],
-                                ecurrent_dropout=net_cfg['recurrent_dropout'],
+    last = i+1
+    gru_last = keras.layers.GRU(net_cfg['neuron_'+str(last)], activation=net_cfg['activation_'+str(last)],
+                                dropout=net_cfg['dropout_'+str(last)],
+                                recurrent_dropout=net_cfg['recurrent_dropout_'+str(last)],
                                 return_sequences=False)(masking_layer)
 
     dense_1 = keras.layers.Dense(2)(gru_last)
-    custom_activation = Activate()
+    custom_activation = Activate(net_cfg)
     outputs = keras.layers.Activation(custom_activation)(dense_1)
 
     model = keras.Model(inputs=inputs, outputs=outputs, name="weibull_params")
 
     # rmse = tf.keras.metrics.RootMeanSquaredError()
-    model.compile(loss=CustomLoss(kind='continuous', reduce_loss=True), optimizer=Adam(lr=.01,
+    model.compile(loss=CustomLoss(kind='continuous', reduce_loss=True), optimizer=Adam(lr=net_cfg['lr'],
                                                                                        clipvalue=0.5))
-    # model.summary() uncomment for debugging
+    model.summary()  # uncomment for debugging
 
     model.fit(train_X, train_y,
-              epochs=net_cfg['epochs'],
-              batch_size=net_cfg['batch_size'],
+              epochs=epochs,
+              batch_size=batches,
               validation_data=(test_X, test_y),
               verbose=1,
               callbacks=[nan_terminator, history, reduce_lr, early_stopping],  # , tensorboard

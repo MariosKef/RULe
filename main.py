@@ -7,66 +7,43 @@ from sklearn.preprocessing import MinMaxScaler
 from modeling import network
 from preprocessing import build_data
 
-"""
-The below is specific to the CMAPSS data
-"""
+# Mipego
+from mipego import mipego
+from mipego.Surrogate import RandomForest
+from mipego.SearchSpace import ContinuousSpace, NominalSpace, OrdinalSpace
+
+from objective import obj_function
 
 
 def main():
-    # Loading and preparing data
-    print('Loading and preparing Data')
-    id_col = 'unit_number'
-    time_col = 'time'
-    feature_cols = ['op_setting_1', 'op_setting_2', 'op_setting_3'] + ['sensor_measurement_{}'.format(x) for x
-                                                                       in range(1, 22)]
-    column_names = [id_col, time_col] + feature_cols
 
-    train_x_orig = pd.read_csv('https://raw.githubusercontent.com/daynebatten/keras-wtte-rnn/master/train.csv',
-                               header=None, names=column_names)
-    test_x_orig = pd.read_csv('https://raw.githubusercontent.com/daynebatten/keras-wtte-rnn/master/test_x.csv',
-                              header=None, names=column_names)
-    test_y_orig = pd.read_csv('https://raw.githubusercontent.com/daynebatten/keras-wtte-rnn/master/test_y.csv',
-                              header=None, names=['T'])
+    # hyperparameter configuration
+    max_time = OrdinalSpace([10, 100], 'max_time')  # maximum lookback
+    lr_rate = ContinuousSpace([1e-4, 1.0e-0], 'lr')  # learning rate
+    num_rec = OrdinalSpace([2, 10], 'num_rec')  # maximum number of recurrent layers
 
-    # Pre-processing data
-    print('Data Preprocessing')
-    scaler = pipeline.Pipeline(steps=[('minmax', MinMaxScaler(feature_range=(-1, 1))),
-                                      ('remove_constant', VarianceThreshold())])
+    activations = ["tanh", "sigmoid"]  # activations of recurrent layers
+    final_activations = ['softplus', 'exp']  # output activations
+    neurons = OrdinalSpace([50, 200], 'neuron') * num_rec._ub[0]  # number of neurons
+    acts = NominalSpace(activations, 'activation') * num_rec._ub[0]  # activations of recurrent layers
+    dropout = ContinuousSpace([1e-5, .9], 'dropout') * num_rec._ub[0]  # normal dropout
+    rec_dropout = ContinuousSpace([1e-5, .9], 'recurrent_dropout') * num_rec._ub[0]  # recurrent dropout
+    f_acts = NominalSpace(final_activations, 'final_activation') * 2  # final activations. The "2" because we have 2
+                                                                      # outputs
 
-    train = train_x_orig.copy()
-    train = np.concatenate([train[['unit_number', 'time']], scaler.fit_transform(train[feature_cols])], axis=1)
+    search_space = num_rec * max_time * neurons * acts * dropout * rec_dropout * f_acts * lr_rate
 
-    test = test_x_orig.copy()
-    test = np.concatenate([test[['unit_number', 'time']], scaler.transform(test[feature_cols])], axis=1)
+    values = search_space.sampling(1)
+    names = search_space.var_name
+    cfg = {}
+    for i in range(len(names)):
+        cfg[names[i]] = values[0][i]
 
-    # Make engine numbers and days zero-indexed
-    train[:, 0:2] -= 1
-    test[:, 0:2] -= 1
+    net_cfg = cfg
 
-    # Configurable observation look-back period for each engine/day
-    print('Data Transformation')
-    max_time = 100
-    mask_value = -99
-
-    train_x, train_y = build_data(units=train[:, 0], time=train[:, 1], x=train[:, 2:], max_time=max_time,
-                                  is_test=False, mask_value=mask_value, n_units=100)
-    test_x, _ = build_data(units=test[:, 0], time=test[:, 1], x=test[:, 2:], max_time=max_time,
-                           is_test=True, mask_value=mask_value, n_units=100)
-
-    # Creating event column (0/1 i.e. censored or uncensored)
-    # For us it is uncensored
-    test_y = test_y_orig.copy()
-    test_y['E'] = 1
-    test_y = test_y.values
-
-    # modeling
-    print('Training')
-    trained_model = network(train_x, train_y, test_x, test_y, mask_value)
-
-    return trained_model
+    return net_cfg
 
 
 if __name__ == '__main__':
-    model = main()
-    model.save('./model.h5')
-
+    net_cfg = main()
+    obj_function(net_cfg)
