@@ -34,7 +34,7 @@ def network(train_X, train_y, test_X, test_y, net_cfg, cfg):
                                     dropout=net_cfg['dropout_'+str(i)],
                                     recurrent_dropout=net_cfg['recurrent_dropout_'+str(i)],
                                     return_sequences=True)(masking_layer)
-    last = i+1
+    last = i + 1
     gru_last = keras.layers.GRU(net_cfg['neuron_'+str(last)], activation=net_cfg['activation_'+str(last)],
                                 dropout=net_cfg['dropout_'+str(last)],
                                 recurrent_dropout=net_cfg['recurrent_dropout_'+str(last)],
