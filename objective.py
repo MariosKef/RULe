@@ -33,6 +33,7 @@ def weibull_mean(alpha, beta):
 
 def obj_function(net_cfg):
 
+    # deleting model if it exists
     try:
         del model
     except NameError:
