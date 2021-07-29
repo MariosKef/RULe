@@ -5,7 +5,7 @@ Keras-WTT-RNN.ipynb
 deep-ttf-master/
 figures/
 __pycache__/
-#DataSets/
+DataSets/CMAPSS
 Preliminary_Experiments_2D_neg_loglikelihood_update-for_Matheus.ipynb
 RUL_SA_prelim_results_cmapss_1st_piece_wise_linear_with_final_repeat.csv
 RUL_SA_prelim_results_cmapss_2nd_piece_wise_linear_with_final.csv
