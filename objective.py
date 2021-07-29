@@ -248,5 +248,7 @@ def obj_function(net_cfg):
         k.clear_session()
         del model
 
-    end = time.time()
-    print(f'Elapsed time: {(end - start) / 60} minutes')
+    # end = time.time()
+    # print(f'Elapsed time: {(end - start) / 60} minutes')
+
+    # TODO: add here also the std somehow and return it back to the main for optimization
