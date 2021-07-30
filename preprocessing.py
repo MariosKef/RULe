@@ -3,7 +3,7 @@ import tqdm
 from tqdm import tqdm
 
 
-def build_data(units, time, x, max_time, is_test, mask_value, original_data, label='linear', **kwargs):
+def build_data(units, time, x, max_time, is_test, mask_value, original_data, net_cfg, label='linear', **kwargs):
     """
     This function prepares the data by segmenting it into subsequences of length max_time
     by also padding, by pad_value, the time-steps when there is no data.
@@ -48,11 +48,11 @@ def build_data(units, time, x, max_time, is_test, mask_value, original_data, lab
                 if label == 'linear':
                     out_y.append(original_max - j)
                 else:
-                    if j <= original_max / 2:
-                        out_y.append(130)  # value taken from Heimes et al. (2008)
+                    if j <= int(original_max*net_cfg['percentage']/100):
+                        out_y.append(net_cfg['rul'])  # value taken from Heimes et al. (2008)
 
                     else:
-                        p = (0 - 130) / (original_max - original_max / 2)
+                        p = (0 - net_cfg['rul']) / (original_max - int(original_max*net_cfg['percentage']/100))
                         rul = p * j - p * original_max
                         out_y.append(rul)
 
@@ -60,11 +60,11 @@ def build_data(units, time, x, max_time, is_test, mask_value, original_data, lab
                 if label == 'linear':
                     out_y.append(max_unit_time - j)
                 else:
-                    if j <= max_unit_time / 2:
-                        out_y.append(130)  # value taken from Heimes et al. (2008)
+                    if j <= int(max_unit_time*net_cfg['percentage']/100):
+                        out_y.append(net_cfg['rul'])  # value taken from Heimes et al. (2008)
 
                     else:
-                        p = (0 - 130) / (max_unit_time - max_unit_time / 2)
+                        p = (0 - net_cfg['rul']) / (max_unit_time - int(max_unit_time*net_cfg['percentage']/100))
                         rul = p * j - p * max_unit_time
                         #                     out_y.append(max_unit_time - j)
                         out_y.append(rul)
