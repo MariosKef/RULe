@@ -35,20 +35,30 @@ def main():
 
     values = search_space.sampling(1)
     names = search_space.var_name
-    cfg = {}
+    net_cfg = {}
     for i in range(len(names)):
-        cfg[names[i]] = values[0][i]
+        net_cfg[names[i]] = values[0][i]
 
-    net_cfg={'max_time': 100, 'lr': 0.01, 'num_rec': 3, 'neuron_0': 100, 'activation_0': 'tanh', 'dropout_0': 0.25, 'recurrent_dropout_0': 0.25, 
-    'neuron_1': 50, 'activation_1': 'tanh', 'dropout_1': 0.25, 'recurrent_dropout_1': 0.25, 
-    'neuron_2': 20, 'activation_2': 'tanh', 'dropout_2': 0.25, 'recurrent_dropout_2': 0.25, 
-    'final_activation_0': 'exp', 'final_activation_1': 'softplus'}
+    # Uncomment for debugging purposes.
+    # net_cfg={'max_time': 100, 'lr': 0.01, 'num_rec': 3, 'neuron_0': 100, 'activation_0': 'tanh', 'dropout_0': 0.25, 'recurrent_dropout_0': 0.25, 
+    # 'neuron_1': 50, 'activation_1': 'tanh', 'dropout_1': 0.25, 'recurrent_dropout_1': 0.25, 
+    # 'neuron_2': 20, 'activation_2': 'tanh', 'dropout_2': 0.25, 'recurrent_dropout_2': 0.25, 
+    # 'final_activation_0': 'exp', 'final_activation_1': 'softplus'}
 
-    print(net_cfg)
+    # print(net_cfg)
 
     return net_cfg
 
 
 if __name__ == '__main__':
+    # General hyperparameters
+    cfg = {'cv': 3, 'shuffle': True,
+       'random_state': 21,
+       'mask_value': -99,
+       'reps': 30,
+       'epochs': 10,
+       'batches': 64}
+
     net_cfg = main()
-    obj_function(net_cfg)
+    rmse, std =  obj_function(net_cfg, cfg)
+    print(f'rmse: {rmse}, std: {std}')

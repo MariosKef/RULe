@@ -9,9 +9,6 @@ from losses import CustomLoss
 
 import numpy as np
 
-epochs = 10
-batches = 64
-
 
 def network(train_X, train_y, test_X, test_y, net_cfg, cfg):
     k.set_epsilon(1e-10)
@@ -52,8 +49,8 @@ def network(train_X, train_y, test_X, test_y, net_cfg, cfg):
     model.summary()  # uncomment for debugging
 
     model.fit(train_X, train_y,
-              epochs=epochs,
-              batch_size=batches,
+              epochs=cfg['epochs'],
+              batch_size=cfg['batches'],
               validation_data=(test_X, test_y),
               verbose=1,
               callbacks=[nan_terminator, history, reduce_lr, early_stopping],  # , tensorboard

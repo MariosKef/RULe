@@ -21,17 +21,11 @@ from data import load_data
 from modeling import network
 from preprocessing import build_data
 
-cfg = {'cv': 10, 'shuffle': True,
-       'random_state': 21,
-       'mask_value': -99,
-       'reps': 30}
-
-
 def weibull_mean(alpha, beta):
     return alpha * math.gamma(1 + 1/beta)
 
 
-def obj_function(net_cfg):
+def obj_function(net_cfg, cfg):
 
     # deleting model if it exists
     try:
@@ -49,16 +43,18 @@ def obj_function(net_cfg):
     rmse_train = []
     r2_train = []
     mae_train = []
+    std_train = []
 
     rmse_test = []
     r2_test = []
     mae_test = []
+    std_test = []
 
     train_all = []
     test_all = []
 
     file = 'results'
-    columns = ['fold', 'rmse_train', 'mae_train', 'r2_train', 'rmse_test', 'mae_test', 'r2_test']
+    columns = ['fold', 'rmse_train', 'mae_train', 'r2_train','std_train', 'rmse_test', 'mae_test', 'r2_test', 'std_test']
     results = pd.DataFrame(columns=columns)
 
     fold_count = 0
@@ -223,32 +219,37 @@ def obj_function(net_cfg):
         rmse_train.append(np.sqrt(mean_squared_error(train_results_df['predicted_mu'], train_results_df['T'])))
         mae_train.append((mean_absolute_error(train_results_df['predicted_mu'], train_results_df['T'])))
         r2_train.append(r2_score(train_results_df['predicted_mu'], train_results_df['T']))
+        std_train.append((train_results_df['std_alpha'].mean() + train_results_df['std_beta'].mean())/2)
 
         # test:
         rmse_test.append(np.sqrt(mean_squared_error(test_results_df['predicted_mu'], test_results_df['T'])))
         mae_test.append((mean_absolute_error(test_results_df['predicted_mu'], test_results_df['T'])))
         r2_test.append(r2_score(test_results_df['predicted_mu'], test_results_df['T']))
+        std_test.append((test_results_df['std_alpha'].mean() + test_results_df['std_beta'].mean())/2)
 
-        # registering results
-        results['fold'] = [fold_count]
-        results['rmse_train'] = [rmse_train[-1]]
-        results['mae_train'] = [mae_train[-1]]
-        results['r2_train'] = [r2_train[-1]]
-        results['rmse_test'] = [rmse_test[-1]]
-        results['mae_test'] = [mae_test[-1]]
-        results['r2_test'] = [r2_test[-1]]
-
-        print(results)
-
-        if os.path.isfile(file):
-            results.to_csv('./' + file, mode='a', index=False, header=False)
-        else:
-            results.to_csv('./' + file, mode='w', index=False, header=True)
-
+        
         k.clear_session()
         del model
 
+        # registering results
+    results['fold'] = np.arange(cfg['cv'])
+    results['rmse_train'] = rmse_train
+    results['mae_train'] = mae_train
+    results['r2_train'] = r2_train
+    results['std_train'] = std_train
+    results['rmse_test'] = rmse_test
+    results['mae_test'] = mae_test
+    results['r2_test'] = r2_test
+    results['std_test'] = std_test
+
+    # print(results)
+
+    if os.path.isfile(file):
+        results.to_csv('./' + file, mode='a', index=False, header=False)
+    else:
+        results.to_csv('./' + file, mode='w', index=False, header=True)
+
+
+    return results['rmse_test'].mean(), results['std_test'].mean()
     # end = time.time()
     # print(f'Elapsed time: {(end - start) / 60} minutes')
-
-    # TODO: add here also the std somehow and return it back to the main for optimization
