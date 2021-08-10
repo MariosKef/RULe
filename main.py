@@ -44,10 +44,10 @@ def main():
         net_cfg[names[i]] = values[0][i]
 
     # Uncomment for debugging purposes.
-    net_cfg={'max_time': 100, 'lr': 0.01, 'num_rec': 3, 'neuron_0': 100, 'activation_0': 'tanh', 'dropout_0': 0.25, 'recurrent_dropout_0': 0.25, 
-    'neuron_1': 50, 'activation_1': 'tanh', 'dropout_1': 0.25, 'recurrent_dropout_1': 0.25, 
-    'neuron_2': 20, 'activation_2': 'tanh', 'dropout_2': 0.25, 'recurrent_dropout_2': 0.25, 
-    'final_activation_0': 'exp', 'final_activation_1': 'softplus', 'percentage': 70, 'rul': 115, 'rul_style': 'nonlinear'}
+    # net_cfg={'max_time': 100, 'lr': 0.01, 'num_rec': 3, 'neuron_0': 100, 'activation_0': 'tanh', 'dropout_0': 0.25, 'recurrent_dropout_0': 0.25, 
+    # 'neuron_1': 50, 'activation_1': 'tanh', 'dropout_1': 0.25, 'recurrent_dropout_1': 0.25, 
+    # 'neuron_2': 20, 'activation_2': 'tanh', 'dropout_2': 0.25, 'recurrent_dropout_2': 0.25, 
+    # 'final_activation_0': 'exp', 'final_activation_1': 'softplus', 'percentage': 70, 'rul': 115, 'rul_style': 'nonlinear'}
 
     print(net_cfg)
 
