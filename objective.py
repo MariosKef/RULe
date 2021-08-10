@@ -118,11 +118,11 @@ def obj_function(net_cfg, cfg):
         # Preparing data for the RNN (numpy arrays)
         train_x, train_y = build_data(units=train[:, 0], time=train[:, 1], x=train[:, 2:], max_time=net_cfg['max_time'],
                                       is_test=False, mask_value=cfg['mask_value'],
-                                      original_data=None, net_cfg = net_cfg, label='nonlinear')
+                                      original_data=None, net_cfg = net_cfg, label=net_cfg['rul_style'])
 
         test_x, test_y = build_data(units=test[:, 0], time=test[:, 1], x=test[:, 2:], max_time=net_cfg['max_time'],
                                     is_test=True, mask_value=cfg['mask_value'],
-                                    original_data=X_test_or, net_cfg = net_cfg, label='nonlinear')
+                                    original_data=X_test_or, net_cfg = net_cfg, label=net_cfg['rul_style'])
 
         # only for debugging
         print('train_x', train_x.shape, 'train_y', train_y.shape, 'test_x', test_x.shape, 'test_y', test_y.shape)
@@ -242,7 +242,7 @@ def obj_function(net_cfg, cfg):
     results['r2_test'] = r2_test
     results['std_test'] = std_test
 
-    # print(results)
+    print(results)
 
     if os.path.isfile(file):
         results.to_csv('./' + file, mode='a', index=False, header=False)

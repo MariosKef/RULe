@@ -18,9 +18,9 @@ from objective import obj_function
 def main():
 
     # hyperparameter configuration
-    max_time = OrdinalSpace([10, 100], 'max_time')  # maximum lookback
+    max_time = OrdinalSpace([50, 100], 'max_time')  # maximum lookback
     lr_rate = ContinuousSpace([1e-4, 1.0e-1], 'lr')  # learning rate
-    num_rec = OrdinalSpace([2, 3], 'num_rec')  # maximum number of recurrent layers
+    num_rec = OrdinalSpace([2, 4], 'num_rec')  # maximum number of recurrent layers
 
     activations = ["tanh", "sigmoid"]  # activations of recurrent layers
     final_activations = ['softplus', 'exp']  # output activations
@@ -33,7 +33,9 @@ def main():
     percentage = OrdinalSpace([20, 75], 'percentage')
     rul = OrdinalSpace([110, 135], 'rul')
 
-    search_space = num_rec * max_time * neurons * acts * dropout * rec_dropout * f_acts * lr_rate * percentage * rul
+    rul_style = NominalSpace(['linear', 'nonlinear'], 'rul_style')
+
+    search_space = num_rec * max_time * neurons * acts * dropout * rec_dropout * f_acts * lr_rate * percentage * rul * rul_style
 
     values = search_space.sampling(1)
     names = search_space.var_name
@@ -42,10 +44,10 @@ def main():
         net_cfg[names[i]] = values[0][i]
 
     # Uncomment for debugging purposes.
-    # net_cfg={'max_time': 100, 'lr': 0.01, 'num_rec': 3, 'neuron_0': 100, 'activation_0': 'tanh', 'dropout_0': 0.25, 'recurrent_dropout_0': 0.25, 
-    # 'neuron_1': 50, 'activation_1': 'tanh', 'dropout_1': 0.25, 'recurrent_dropout_1': 0.25, 
-    # 'neuron_2': 20, 'activation_2': 'tanh', 'dropout_2': 0.25, 'recurrent_dropout_2': 0.25, 
-    # 'final_activation_0': 'exp', 'final_activation_1': 'softplus', 'percentage': 70, 'rul': 115}
+    net_cfg={'max_time': 100, 'lr': 0.01, 'num_rec': 3, 'neuron_0': 100, 'activation_0': 'tanh', 'dropout_0': 0.25, 'recurrent_dropout_0': 0.25, 
+    'neuron_1': 50, 'activation_1': 'tanh', 'dropout_1': 0.25, 'recurrent_dropout_1': 0.25, 
+    'neuron_2': 20, 'activation_2': 'tanh', 'dropout_2': 0.25, 'recurrent_dropout_2': 0.25, 
+    'final_activation_0': 'exp', 'final_activation_1': 'softplus', 'percentage': 70, 'rul': 115, 'rul_style': 'nonlinear'}
 
     print(net_cfg)
 
