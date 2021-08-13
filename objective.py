@@ -7,6 +7,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 # Various
 import pandas as pd
+import json
 # tensorflow
 import tensorflow as tf
 from sklearn import pipeline
@@ -25,7 +26,15 @@ def weibull_mean(alpha, beta):
     return alpha * math.gamma(1 + 1/beta)
 
 model = None
-def obj_function(net_cfg, cfg):
+def obj_function(net_cfg, cfg=None):
+
+    if (cfg == None):
+        cfg = {'cv': 3, 'shuffle': True,
+       'random_state': 21,
+       'mask_value': -99,
+       'reps': 30,
+       'epochs': 10,
+       'batches': 64}
 
     # deleting model if it exists
     try:
@@ -54,7 +63,7 @@ def obj_function(net_cfg, cfg):
     test_all = []
 
     file = 'results'
-    columns = ['fold', 'rmse_train', 'mae_train', 'r2_train','std_train', 'rmse_test', 'mae_test', 'r2_test', 'std_test']
+    columns = ['fold', 'rmse_train', 'mae_train', 'r2_train','std_train', 'rmse_test', 'mae_test', 'r2_test', 'std_test', 'net_cfg']
     results = pd.DataFrame(columns=columns)
 
     fold_count = 0
@@ -211,25 +220,31 @@ def obj_function(net_cfg, cfg):
             lambda row: weibull_mean(row[0] - 1.96 * row[2] / np.sqrt(cfg['reps']),
                                      row[1] - 1.96 * row[3] / np.sqrt(cfg['reps'])), axis=1)
         # General administration
-        train_all.append(train_results_df)
-        test_all.append(test_results_df)
+        success = True
+        try:
+            train_all.append(train_results_df)
+            test_all.append(test_results_df)
 
-        # Performance evaluation
-        # train:
-        rmse_train.append(np.sqrt(mean_squared_error(train_results_df['predicted_mu'], train_results_df['T'])))
-        mae_train.append((mean_absolute_error(train_results_df['predicted_mu'], train_results_df['T'])))
-        r2_train.append(r2_score(train_results_df['predicted_mu'], train_results_df['T']))
-        std_train.append((train_results_df['std_alpha'].mean() + train_results_df['std_beta'].mean())/2)
+            # Performance evaluation
+            # train:
+            rmse_train.append(np.sqrt(mean_squared_error(train_results_df['predicted_mu'], train_results_df['T'])))
+            mae_train.append((mean_absolute_error(train_results_df['predicted_mu'], train_results_df['T'])))
+            r2_train.append(r2_score(train_results_df['predicted_mu'], train_results_df['T']))
+            std_train.append((train_results_df['std_alpha'].mean() + train_results_df['std_beta'].mean())/2)
 
-        # test:
-        rmse_test.append(np.sqrt(mean_squared_error(test_results_df['predicted_mu'], test_results_df['T'])))
-        mae_test.append((mean_absolute_error(test_results_df['predicted_mu'], test_results_df['T'])))
-        r2_test.append(r2_score(test_results_df['predicted_mu'], test_results_df['T']))
-        std_test.append((test_results_df['std_alpha'].mean() + test_results_df['std_beta'].mean())/2)
-
+            # test:
+            rmse_test.append(np.sqrt(mean_squared_error(test_results_df['predicted_mu'], test_results_df['T'])))
+            mae_test.append((mean_absolute_error(test_results_df['predicted_mu'], test_results_df['T'])))
+            r2_test.append(r2_score(test_results_df['predicted_mu'], test_results_df['T']))
+            std_test.append((test_results_df['std_alpha'].mean() + test_results_df['std_beta'].mean())/2)
+        except:
+            success = False
         
         k.clear_session()
         del model
+
+        if (success == False):
+            return 0,0, False #not successful
 
         # registering results
     results['fold'] = np.arange(cfg['cv'])
@@ -241,6 +256,7 @@ def obj_function(net_cfg, cfg):
     results['mae_test'] = mae_test
     results['r2_test'] = r2_test
     results['std_test'] = std_test
+    results['net_cfg'] = json.dumps(net_cfg)
 
     print(results)
 
@@ -249,7 +265,9 @@ def obj_function(net_cfg, cfg):
     else:
         results.to_csv('./' + file, mode='w', index=False, header=True)
 
-
-    return results['rmse_test'].mean(), results['std_test'].mean()
+    if (np.isfinite(results['rmse_test'].mean()) and np.isfinite(results['std_test'].mean())):
+        return results['rmse_test'].mean(), results['std_test'].mean(), True
+    else:
+        return 0,0, False #not successful
     # end = time.time()
     # print(f'Elapsed time: {(end - start) / 60} minutes')
