@@ -29,11 +29,11 @@ model = None
 def obj_function(net_cfg, cfg=None):
 
     if (cfg == None):
-        cfg = {'cv': 3, 'shuffle': True,
+        cfg = {'cv': 10, 'shuffle': True,
        'random_state': 21,
        'mask_value': -99,
        'reps': 30,
-       'epochs': 10,
+       'epochs': 20,
        'batches': 64}
 
     # deleting model if it exists

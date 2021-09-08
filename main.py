@@ -1,11 +1,11 @@
-import numpy as np
-import pandas as pd
-from sklearn import pipeline
-from sklearn.feature_selection import VarianceThreshold
-from sklearn.preprocessing import MinMaxScaler
+# import numpy as np
+# import pandas as pd
+# from sklearn import pipeline
+# from sklearn.feature_selection import VarianceThreshold
+# from sklearn.preprocessing import MinMaxScaler
 
-from modeling import network
-from preprocessing import build_data
+# from modeling import network
+# from preprocessing import build_data
 
 # Mipego
 from mipego import mipego
@@ -68,29 +68,31 @@ def main():
 
     #now define the optimizer.
     opt = mipego(search_space, obj_function, model1, second_surrogate=model2,
-                    minimize=True, max_eval=500, 
-                    infill='EI', n_init_sample=10, 
+                    minimize=True, max_eval=50, 
+                    infill='HVI', n_init_sample=10, 
                     n_point=1, n_job=1, optimizer='MIES', 
                     verbose=False, random_seed=None)
 
 
     #run
-    incumbent, stop_dict = opt.run()
-    print(incumbent)
+    opt.run()
+    # incumbent, stop_dict = opt.run()
+    # print(incumbent)
     #print(net_cfg)
 
-    return incumbent
+    # return incumbent
 
 
 if __name__ == '__main__':
     # General hyperparameters
-    cfg = {'cv': 3, 'shuffle': True,
-       'random_state': 21,
-       'mask_value': -99,
-       'reps': 30,
-       'epochs': 10,
-       'batches': 64}
+    # cfg = {'cv': 2, 'shuffle': True,
+    #    'random_state': 21,
+    #    'mask_value': -99,
+    #    'reps': 30,
+    #    'epochs': 2,
+    #    'batches': 64}
 
-    incumbent = main()
+    # incumbent = main()
+    main()
     #rmse, std =  obj_function(net_cfg, cfg)
-    print(incumbent)
+    # print(incumbent)
