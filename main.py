@@ -44,10 +44,10 @@ def main():
     #    net_cfg[names[i]] = values[0][i]
 
     # Uncomment for debugging purposes.
-    # net_cfg={'max_time': 100, 'lr': 0.01, 'num_rec': 3, 'neuron_0': 100, 'activation_0': 'tanh', 'dropout_0': 0.25, 'recurrent_dropout_0': 0.25, 
-    # 'neuron_1': 50, 'activation_1': 'tanh', 'dropout_1': 0.25, 'recurrent_dropout_1': 0.25, 
-    # 'neuron_2': 20, 'activation_2': 'tanh', 'dropout_2': 0.25, 'recurrent_dropout_2': 0.25, 
-    # 'final_activation_0': 'exp', 'final_activation_1': 'softplus', 'percentage': 70, 'rul': 115, 'rul_style': 'nonlinear'}
+    net_cfg={'max_time': 100, 'lr': 0.01, 'num_rec': 3, 'neuron_0': 100, 'activation_0': 'tanh', 'dropout_0': 0.25, 'recurrent_dropout_0': 0.25, 
+    'neuron_1': 50, 'activation_1': 'tanh', 'dropout_1': 0.25, 'recurrent_dropout_1': 0.25, 
+    'neuron_2': 20, 'activation_2': 'tanh', 'dropout_2': 0.25, 'recurrent_dropout_2': 0.25, 
+    'final_activation_0': 'exp', 'final_activation_1': 'softplus', 'percentage': 70, 'rul': 115, 'rul_style': 'nonlinear'}
     
     """
     self, search_space, obj_func, surrogate, second_surrogate=None, ftarget=None,
@@ -63,22 +63,23 @@ def main():
 
     print(search_space.levels)
 
-    model1 = RandomForest(levels=search_space.levels)
-    model2 = RandomForest(levels=search_space.levels)
+    # model1 = RandomForest(levels=search_space.levels)
+    # model2 = RandomForest(levels=search_space.levels)
 
-    #now define the optimizer.
-    opt = mipego(search_space, obj_function, model1, second_surrogate=model2,
-                    minimize=True, max_eval=50, 
-                    infill='HVI', n_init_sample=10, 
-                    n_point=1, n_job=1, optimizer='MIES', 
-                    verbose=False, random_seed=None)
+    # #now define the optimizer.
+    # opt = mipego(search_space, obj_function, model1, second_surrogate=model2,
+    #                 minimize=True, max_eval=50, 
+    #                 infill='HVI', n_init_sample=10, 
+    #                 n_point=1, n_job=1, optimizer='MIES', 
+    #                 verbose=False, random_seed=None)
 
 
     #run
-    opt.run()
+    # opt.run()
     # incumbent, stop_dict = opt.run()
     # print(incumbent)
-    #print(net_cfg)
+    print(net_cfg)
+    obj_function(net_cfg, cfg=None)
 
     # return incumbent
 

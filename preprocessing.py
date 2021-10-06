@@ -44,7 +44,7 @@ def build_data(units, time, x, max_time, is_test, mask_value, original_data, net
             engine_x = x[units == i]
 
             if is_test:
-                original_max = original_data[original_data.unit_number == i].time.max()
+                original_max = original_data[int(i)]
                 if label == 'linear':
                     out_y.append(original_max - j)
                 else:

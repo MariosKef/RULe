@@ -8,7 +8,8 @@ from activations import Activate
 from losses import CustomLoss
 
 import numpy as np
-
+import os
+os.environ["CUDA_VISIBLE_DEVICES"]=""
 
 def network(train_X, train_y, test_X, test_y, net_cfg, cfg):
     k.set_epsilon(1e-10)
