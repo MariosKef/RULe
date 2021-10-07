@@ -5,9 +5,12 @@ import time
 
 import matplotlib.pyplot as plt
 import numpy as np
+
 # Various
 import pandas as pd
 import json
+import sys
+
 # tensorflow
 import tensorflow as tf
 from sklearn import pipeline
@@ -33,7 +36,7 @@ def obj_function(net_cfg, cfg=None):
         'random_state': 21,
         'mask_value': -99,
         'reps': 30,
-        'epochs': 20,
+        'epochs': 2,
         'batches': 64}
 
     # deleting model if it exists
@@ -215,7 +218,7 @@ def obj_function(net_cfg, cfg=None):
     results['std_test'] = std_test
     results['net_cfg'] = json.dumps(net_cfg)
 
-    print(results)
+    # print(results)
 
     if os.path.isfile(file):
         results.to_csv('./' + file, mode='a', index=False, header=False)
@@ -228,3 +231,15 @@ def obj_function(net_cfg, cfg=None):
         return 0, 0, False #not successful
     # end = time.time()
     # print(f'Elapsed time: {(end - start) / 60} minutes')
+
+
+#system arguments (configuration)
+if len(sys.argv) > 2 and sys.argv[1] == '--cfg':
+    cfg = eval(sys.argv[2])
+    if len(sys.argv) > 3:
+        gpu = sys.argv[3]
+        
+        os.environ["CUDA_DEVICE_ORDER"]="PCI_BUS_ID"   # see issue #152
+        os.environ["CUDA_VISIBLE_DEVICES"]=str(gpu)
+    print(obj_function(cfg, None))
+    k.clear_session()

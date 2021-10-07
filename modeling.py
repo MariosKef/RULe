@@ -9,7 +9,7 @@ from losses import CustomLoss
 
 import numpy as np
 import os
-os.environ["CUDA_VISIBLE_DEVICES"]=""
+# os.environ["CUDA_VISIBLE_DEVICES"]=""  # uncomment in case running ONLY on CPU is required
 
 def network(train_X, train_y, test_X, test_y, net_cfg, cfg):
     k.set_epsilon(1e-10)
