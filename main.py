@@ -26,7 +26,7 @@ class obj_func(object):
         outputval = [0, 0, False]
         try:
             #we use a timeout to cancel very long evaluations.
-            outs = str(check_output(cmd,stderr=STDOUT, timeout=40000, encoding="utf8")) 
+            outs = str(check_output(cmd,stderr=STDOUT, timeout=40000, encoding="utf8"))
             outs = eval(outs.split("\n")[-2])
 
             outputval = [-1 * float(outs[0]), -1 * float(outs[1]), bool(outs[2])]
@@ -105,7 +105,8 @@ def main():
                     minimize=True, max_eval=3, 
                     infill='HVI', n_init_sample=2, 
                     n_point=1, n_job=1, optimizer='MIES', 
-                    verbose=False, random_seed=None, available_gpus=available_gpus, bi_objective=True)
+                    verbose=False, random_seed=None, available_gpus=available_gpus, bi_objective=True, 
+                    log_file='./log_file.txt')
 
 
     #run
