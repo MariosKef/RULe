@@ -23,7 +23,7 @@ class obj_func(object):
         print("calling program with gpu "+str(gpu_no))
         cmd = ['python3', self.program, '--cfg', str(cfg), str(gpu_no)]
         outs = ""
-        outputval = [0, 0, True]
+        outputval = [0, 0, False]
         try:
             #we use a timeout to cancel very long evaluations.
             outs = str(check_output(cmd,stderr=STDOUT, timeout=40000, encoding="utf8")) 
