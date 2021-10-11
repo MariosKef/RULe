@@ -187,6 +187,7 @@ class mipego(object):
         self.eval_count = 0
         self.ref_time = ref_time
         self.ref_loss = ref_loss
+        # self.max_iter = self.max_eval - self.n_init_sample  # Marios
         
         # setting up cooling schedule
         if self.infill == 'MGFI':
@@ -304,7 +305,7 @@ class mipego(object):
         gpu_patch = gpu
         while True:
             ans = self.obj_func(x.to_dict(), gpu_no=gpu_patch, **self.obj_func_params)
-            
+            self.logger.info(f'ans is: {ans}')
 
             time_ans,loss_ans,success= ans[0],ans[1],ans[2]
             
@@ -761,9 +762,9 @@ class mipego(object):
                     del self.surr_loss_fit_hist[-1]
                     del self.surr_loss_mies_hist[-1]
                     del self.time_between_gpu_hist[-1]
-                self.n_left += self.n_jobs
-                self.iter_count -= self.n_jobs
-                self.eval_count -= self.n_jobs
+                self.n_left -= self.n_jobs
+                self.iter_count += self.n_jobs
+                self.eval_count += self.n_jobs
 
             thread_dict = {}
             # launch threads for all GPUs

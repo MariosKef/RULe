@@ -98,13 +98,13 @@ def main():
     model1 = RandomForest(levels=search_space.levels)
     model2 = RandomForest(levels=search_space.levels)
 
-    available_gpus = [0, 1]
+    available_gpus = [1, 2]
 
     #now define the optimizer.
     opt = mipego(search_space, objective, model1, second_surrogate=model2,
                     minimize=True, max_eval=3, 
                     infill='HVI', n_init_sample=2, 
-                    n_point=1, n_job=1, optimizer='MIES', 
+                    n_point=1, n_job=2, optimizer='MIES', 
                     verbose=False, random_seed=None, available_gpus=available_gpus, bi_objective=True, 
                     log_file='./log_file.txt')
 
