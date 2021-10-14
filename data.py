@@ -44,6 +44,7 @@ def load_data():
     counter = -1
 
     for i in vld.unit_number.unique():
+        # print(f'unit number is {i}')
         for j in range(1,6):  # 5 truncations per instance
             counter += 1
             np.random.seed(i*j)
@@ -65,5 +66,6 @@ def load_data():
 
     vld_trunc = pd.concat(vld_trunc)
     vld_trunc.reset_index(drop=True, inplace=True)
+    # print(f'max len per unit is {max_cycle}')
 
     return train, feature_cols, vld_trunc, vld, np.array(max_cycle)

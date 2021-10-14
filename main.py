@@ -1,5 +1,7 @@
 # various
-
+import os
+os.environ["CUDA_DEVICE_ORDER"]="PCI_BUS_ID"
+os.environ["CUDA_VISIBLE_DEVICES"]="1,2,3"
 import subprocess, sys
 from subprocess import STDOUT, check_output
 import re
@@ -23,7 +25,7 @@ class obj_func(object):
         print("calling program with gpu "+str(gpu_no))
         cmd = ['python3', self.program, '--cfg', str(cfg), str(gpu_no)]
         outs = ""
-        outputval = [0, 0, False]
+        outputval = [1e10, 1e10, False]
         try:
             #we use a timeout to cancel very long evaluations.
             outs = str(check_output(cmd,stderr=STDOUT, timeout=40000, encoding="utf8"))
@@ -32,7 +34,7 @@ class obj_func(object):
             outputval = [float(outs[0]), float(outs[1]), bool(outs[2])]
             
             if np.isnan(outputval).any():
-                outputval = [0, 0, False]
+                outputval = [1e10, 1e10, False]
         except subprocess.CalledProcessError as e:
             #exception handling
             traceback.print_exc()
@@ -40,7 +42,7 @@ class obj_func(object):
         except:
             print ("Unexpected error:")
             traceback.print_exc()
-            outputval = [0, 0, False]
+            outputval = [1e10, 1e10, False]
         return outputval
 
 
@@ -67,7 +69,10 @@ def main():
 
     rul_style = NominalSpace(['linear', 'nonlinear'], 'rul_style')
 
-    search_space = num_rec * max_time * neurons * acts * dropout * rec_dropout * f_acts * percentage * rul * rul_style * lr_rate
+    batch_size = NominalSpace(['32', '64', '256'], 'batch')
+
+    search_space = num_rec * max_time * neurons * acts * dropout * rec_dropout * f_acts * percentage * rul * \
+    rul_style * lr_rate * batch_size
 
     #values = search_space.sampling(1)
     #names = search_space.var_name
@@ -75,16 +80,16 @@ def main():
     #for i in range(len(names)):
     #    net_cfg[names[i]] = values[0][i]
 
-    # Uncomment for debugging purposes.
+    # # Uncomment for debugging purposes.
     # net_cfg={'max_time': 100, 'lr': 0.01, 'num_rec': 3, 'neuron_0': 100, 'activation_0': 'tanh', 'dropout_0': 0.25, 'recurrent_dropout_0': 0.25, 
     # 'neuron_1': 50, 'activation_1': 'tanh', 'dropout_1': 0.25, 'recurrent_dropout_1': 0.25, 
     # 'neuron_2': 20, 'activation_2': 'tanh', 'dropout_2': 0.25, 'recurrent_dropout_2': 0.25, 
-    # 'final_activation_0': 'exp', 'final_activation_1': 'softplus', 'percentage': 70, 'rul': 115, 'rul_style': 'nonlinear'}
+    # 'final_activation_0': 'exp', 'final_activation_1': 'softplus', 'percentage': 30, 'rul': 115, 'rul_style': 'nonlinear'}
     
     """
     self, search_space, obj_func, surrogate, second_surrogate=None, ftarget=None,
                  minimize=True, noisy=False, max_eval=None, 
-                 infill='MGFI', t0=2, tf=1e-1, schedule=None,
+                 infill='MGFI', t0=2, tf=1e-1, scheduI can call tomorrow morning. Would that bele=None,
                  n_init_sample=None, n_point=1, n_job=1, backend='multiprocessing',
                  n_restart=None, max_infill_eval=None, wait_iter=3, optimizer='MIES', 
                  log_file=None, data_file=None, verbose=False, random_seed=None,
@@ -98,15 +103,18 @@ def main():
     model1 = RandomForest(levels=search_space.levels)
     model2 = RandomForest(levels=search_space.levels)
 
-    available_gpus = [0, 1]
+    available_gpus = [1, 2, 3]
+    ignore_gpu = np.append([0], np.arange(4,20)).tolist()
 
     #now define the optimizer.
     opt = mipego(search_space, objective, model1, second_surrogate=model2,
-                    minimize=True, max_eval=20, 
-                    infill='HVI', n_init_sample=10, 
-                    n_point=1, n_job=2, optimizer='MIES', 
-                    verbose=False, random_seed=None, available_gpus=available_gpus, bi_objective=True, 
-                    log_file='./log_file.txt')
+                    minimize=True, max_eval=100, 
+                    infill='HVI', n_init_sample=30, 
+                    n_point=1, n_job=3, optimizer='MIES', 
+                    verbose=True, random_seed=42, available_gpus=available_gpus, 
+                    ignore_gpu=ignore_gpu,
+                    bi_objective=True, 
+                    log_file='./log_file_14_10.txt')
 
 
     #run
@@ -114,9 +122,9 @@ def main():
     # incumbent, stop_dict = opt.run()
     # print(incumbent)
     # print(net_cfg)
-    # obj_function(net_cfg, cfg=None)
+    # model, train_results_df, test_results_df = obj_function(net_cfg, cfg=None)
 
-    # return incumbent
+    # return model, train_results_df, test_results_df
 
 
 if __name__ == '__main__':
@@ -130,5 +138,5 @@ if __name__ == '__main__':
 
     # incumbent = main()
     main()
-    #rmse, std =  obj_function(net_cfg, cfg)
+    # rmse, std =  obj_function(net_cfg, cfg)
     # print(incumbent)

@@ -13,6 +13,7 @@ import sys
 
 # tensorflow
 import tensorflow as tf
+tf.random.set_seed(42)
 from sklearn import pipeline
 from sklearn.feature_selection import VarianceThreshold
 from sklearn.metrics import mean_squared_error, mean_absolute_error, r2_score
@@ -36,7 +37,7 @@ def obj_function(net_cfg, cfg=None):
         'random_state': 21,
         'mask_value': -99,
         'reps': 30,
-        'epochs': 2,
+        'epochs': 50,
         'batches': 64}
 
     # deleting model if it exists
@@ -51,6 +52,7 @@ def obj_function(net_cfg, cfg=None):
     print(train_x_orig.shape)
     print(vld_trunc.shape)
     print(original_len.shape)
+    # print(original_len)
     # print(vld_trunc.unit_number.unique())
 
     rmse_train = []
@@ -66,7 +68,7 @@ def obj_function(net_cfg, cfg=None):
     train_all = []
     test_all = []
 
-    file = 'results_no_cv_HO'
+    file = 'results_no_cv_HO_14_10'
     columns = ['fold', 'rmse_train', 'mae_train', 'r2_train','std_train', 'rmse_test', 'mae_test', 'r2_test', 'std_test', 'net_cfg']
     results = pd.DataFrame(columns=columns)
     start = time.time()
@@ -91,6 +93,7 @@ def obj_function(net_cfg, cfg=None):
                                 is_test=True, mask_value=cfg['mask_value'],
                                 original_data=original_len, net_cfg = net_cfg, label=net_cfg['rul_style'])
 
+    # print(test_y)
     # only for debugging
     print('train_x', train_x.shape, 'train_y', train_y.shape, 'test_x', test_x.shape, 'test_y', test_y.shape)
 
@@ -201,10 +204,10 @@ def obj_function(net_cfg, cfg=None):
         success = False
 
     k.clear_session()
-    del model
+    # del model
 
     if (success == False):
-        return 0,0, False #not successful
+        return 1e10, 1e10, False  # not successful
 
     # registering results
     # results['fold'] = np.arange(cfg['cv'])
@@ -220,6 +223,8 @@ def obj_function(net_cfg, cfg=None):
 
     # print(results)
 
+    # return model, train_results_df, test_results_df
+    
     if os.path.isfile(file):
         results.to_csv('./' + file, mode='a', index=False, header=False)
     else:
@@ -228,12 +233,12 @@ def obj_function(net_cfg, cfg=None):
     if (np.isfinite(results['rmse_test'].mean()) and np.isfinite(results['std_test'].mean())):
         return results['rmse_test'].mean(), results['std_test'].mean(), True
     else:
-        return 0, 0, False #not successful
+        return 1e10, 1e10, False #not successful
     # end = time.time()
     # print(f'Elapsed time: {(end - start) / 60} minutes')
 
 
-#system arguments (configuration)
+# #system arguments (configuration)
 if len(sys.argv) > 2 and sys.argv[1] == '--cfg':
     cfg = eval(sys.argv[2])
     if len(sys.argv) > 3:

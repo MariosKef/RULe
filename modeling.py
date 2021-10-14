@@ -1,3 +1,9 @@
+import os
+# os.environ["CUDA_DEVICE_ORDER"]="PCI_BUS_ID"
+# os.environ["CUDA_VISIBLE_DEVICES"]="1,2"  # uncomment in case running ONLY on CPU is required
+
+import tensorflow as tf
+tf.random.set_seed(42)
 from tensorflow.keras import backend as k
 from tensorflow.keras import callbacks
 from tensorflow.keras.callbacks import History
@@ -8,15 +14,13 @@ from activations import Activate
 from losses import CustomLoss
 
 import numpy as np
-import os
-# os.environ["CUDA_VISIBLE_DEVICES"]=""  # uncomment in case running ONLY on CPU is required
 
 def network(train_X, train_y, test_X, test_y, net_cfg, cfg):
     k.set_epsilon(1e-10)
     history = History()
     nan_terminator = callbacks.TerminateOnNaN()
     reduce_lr = callbacks.ReduceLROnPlateau(monitor='val_loss')
-    early_stopping = callbacks.EarlyStopping(patience=10)
+    early_stopping = callbacks.EarlyStopping(patience=5)
     #     tensorboard = callbacks.TensorBoard(log_dir = './logs_2D')
 
     window = train_X.shape[1]
@@ -49,9 +53,10 @@ def network(train_X, train_y, test_X, test_y, net_cfg, cfg):
                                                                                        clipvalue=0.5))
     model.summary()  # uncomment for debugging
 
+    batch_size=eval(net_cfg['batch'])
     model.fit(train_X, train_y,
               epochs=cfg['epochs'],
-              batch_size=cfg['batches'],
+              batch_size=eval(net_cfg['batch']),
               validation_data=(test_X, test_y),
               verbose=1,
               callbacks=[nan_terminator, history, reduce_lr, early_stopping],  # , tensorboard

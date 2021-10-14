@@ -31,7 +31,7 @@ def build_data(units, time, x, max_time, is_test, mask_value, original_data, net
     for i in tqdm(n_units):
         # When did the engine fail? (Last day + 1 for train data, irrelevant for test.)
         max_unit_time = int(np.max(time[units == i])) + 1
-
+        
         if is_test:
             start = max_unit_time - 1
         else:
@@ -40,21 +40,27 @@ def build_data(units, time, x, max_time, is_test, mask_value, original_data, net
         this_x = []
 
         for j in range(start, max_unit_time):
-
+            
             engine_x = x[units == i]
 
             if is_test:
                 original_max = original_data[int(i)]
+                # print(f'j {j}')
+                # print(f'original_max {original_max}')
                 if label == 'linear':
                     out_y.append(original_max - j)
                 else:
                     if j <= int(original_max*net_cfg['percentage']/100):
                         out_y.append(net_cfg['rul'])  # value taken from Heimes et al. (2008)
+                        # print(net_cfg['rul'])
+                        # print('\n')
 
                     else:
                         p = (0 - net_cfg['rul']) / (original_max - int(original_max*net_cfg['percentage']/100))
                         rul = p * j - p * original_max
                         out_y.append(rul)
+                        # print(rul)
+                        # print('\n')
 
             else:
                 if label == 'linear':
@@ -78,6 +84,8 @@ def build_data(units, time, x, max_time, is_test, mask_value, original_data, net
         this_x = np.concatenate(this_x)
         out_x.append(this_x)
     out_x = np.concatenate(out_x)
-    out_y = np.array(out_y).reshape(len(out_y),
-                                    1)  # np.concatenate(out_y) (uncomment when adding event. See comment above)
+    out_y = np.array(out_y).reshape(len(out_y), 1)  # np.concatenate(out_y) (uncomment when adding event. See comment above)
+
+    # if is_test:
+    #     print(out_y)
     return out_x, out_y
