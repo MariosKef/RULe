@@ -41,9 +41,12 @@ def build_data(units, time, x, max_time, is_test, mask_value, original_data, net
 
         for j in range(start, max_unit_time):
             
+            
             engine_x = x[units == i]
 
             if is_test:
+                # print(i)
+                # print(original_data[int(i)])
                 original_max = original_data[int(i)]
                 # print(f'j {j}')
                 # print(f'original_max {original_max}')
@@ -52,6 +55,7 @@ def build_data(units, time, x, max_time, is_test, mask_value, original_data, net
                 else:
                     if j <= int(original_max*net_cfg['percentage']/100):
                         out_y.append(net_cfg['rul'])  # value taken from Heimes et al. (2008)
+                        # print(out_y[-1])
                         # print(net_cfg['rul'])
                         # print('\n')
 

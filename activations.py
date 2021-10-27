@@ -16,16 +16,19 @@ class Activate(keras.layers.Layer):
                model.add(Activation(wtte_activation))
     """
 
-    def __init__(self, net_cfg):
-        super().__init__()
-        self.func1 = net_cfg['final_activation_0']
-        self.func2 = net_cfg['final_activation_1']
+    def __init__(self, net_cfg=None, **kwargs):
+        super().__init__(**kwargs)
+        self.net_cfg = net_cfg
+        
 
     def call(self, ab):
         """ (Internal function) Activation wrapper
         :param ab: original tensor with alpha and beta.
         :return ab: return of `output_lambda` with `init_alpha` and `max_beta_value`.
         """
+
+        self.func1 = self.net_cfg['final_activation_0']
+        self.func2 = self.net_cfg['final_activation_1']
 
         a, b = tf.unstack(ab, axis=-1)
         # print('f1: k.'+self.func1+"(a)")
@@ -38,7 +41,7 @@ class Activate(keras.layers.Layer):
         return x
 
     def get_config(self):
-        return {"func1": self.func1, "func2": self.func2}
+        return {"net_cfg": self.net_cfg}
 
     @classmethod
     def from_config(cls, config):

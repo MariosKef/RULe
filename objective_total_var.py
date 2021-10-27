@@ -37,7 +37,7 @@ def obj_function(net_cfg, cfg=None):
         'random_state': 21,
         'mask_value': -99,
         'reps': 30,
-        'epochs': 20,
+        'epochs': 10,
         'batches': 64}
 
     # deleting model if it exists
@@ -224,7 +224,7 @@ def obj_function(net_cfg, cfg=None):
 
     print(results)
 
-    return model, train_results_df, test_results_df, test_x_orig, test_y_orig, scaler, train_x, test_x
+    return model, train_results_df, test_results_df, test_x_orig, test_y_orig, scaler
     
     if os.path.isfile(file):
         results.to_csv('./' + file, mode='a', index=False, header=False)

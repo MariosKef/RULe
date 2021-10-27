@@ -1,7 +1,7 @@
 # various
 import os
-os.environ["CUDA_DEVICE_ORDER"]="PCI_BUS_ID"
-os.environ["CUDA_VISIBLE_DEVICES"]="1,2,3"
+# os.environ["CUDA_DEVICE_ORDER"]="PCI_BUS_ID"
+# os.environ["CUDA_VISIBLE_DEVICES"]="1,2,3,4,5"
 import subprocess, sys
 from subprocess import STDOUT, check_output
 import re
@@ -52,20 +52,20 @@ def main():
     objective = obj_func('./objective.py')
 
     # hyperparameter configuration
-    max_time = OrdinalSpace([10, 40], 'max_time')  # maximum lookback
+    max_time = OrdinalSpace([20, 40], 'max_time')  # maximum lookback
     lr_rate = ContinuousSpace([1e-4, 1.0e-1], 'lr')  # learning rate
     num_rec = OrdinalSpace([2, 4], 'num_rec')  # maximum number of recurrent layers
 
     activations = ["tanh", "sigmoid"]  # activations of recurrent layers
     final_activations = ['softplus', 'exp']  # output activations
-    neurons = OrdinalSpace([50, 100], 'neuron') * num_rec._ub[0]  # number of neurons
+    neurons = OrdinalSpace([65, 100], 'neuron') * num_rec._ub[0]  # number of neurons
     acts = NominalSpace(activations, 'activation') * num_rec._ub[0]  # activations of recurrent layers
     dropout = ContinuousSpace([1e-5, .9], 'dropout') * num_rec._ub[0]  # normal dropout
     rec_dropout = ContinuousSpace([1e-5, .9], 'recurrent_dropout') * num_rec._ub[0]  # recurrent dropout
     f_acts = NominalSpace(final_activations, 'final_activation') * 2  # final activations. The "2" because we have 2
                                                                       # outputs
-    percentage = OrdinalSpace([20, 75], 'percentage')
-    rul = OrdinalSpace([110, 135], 'rul')
+    percentage = OrdinalSpace([60, 75], 'percentage')
+    rul = OrdinalSpace([120, 130], 'rul')
 
     rul_style = NominalSpace(['linear', 'nonlinear'], 'rul_style')
 
@@ -81,10 +81,10 @@ def main():
     #    net_cfg[names[i]] = values[0][i]
 
     # # Uncomment for debugging purposes.
-    # net_cfg={'max_time': 100, 'lr': 0.01, 'num_rec': 3, 'neuron_0': 100, 'activation_0': 'tanh', 'dropout_0': 0.25, 'recurrent_dropout_0': 0.25, 
-    # 'neuron_1': 50, 'activation_1': 'tanh', 'dropout_1': 0.25, 'recurrent_dropout_1': 0.25, 
-    # 'neuron_2': 20, 'activation_2': 'tanh', 'dropout_2': 0.25, 'recurrent_dropout_2': 0.25, 
-    # 'final_activation_0': 'exp', 'final_activation_1': 'softplus', 'percentage': 30, 'rul': 115, 'rul_style': 'nonlinear'}
+    net_cfg={'max_time': 100, 'lr': 0.01, 'num_rec': 3, 'neuron_0': 100, 'activation_0': 'tanh', 'dropout_0': 0.25, 'recurrent_dropout_0': 0.25, 
+    'neuron_1': 50, 'activation_1': 'tanh', 'dropout_1': 0.25, 'recurrent_dropout_1': 0.25, 
+    'neuron_2': 20, 'activation_2': 'tanh', 'dropout_2': 0.25, 'recurrent_dropout_2': 0.25, 
+    'final_activation_0': 'exp', 'final_activation_1': 'softplus', 'percentage': 50, 'rul': 115, 'rul_style': 'nonlinear','batch': '32'}
     
     """
     self, search_space, obj_func, surrogate, second_surrogate=None, ftarget=None,
@@ -103,28 +103,54 @@ def main():
     model1 = RandomForest(levels=search_space.levels)
     model2 = RandomForest(levels=search_space.levels)
 
-    available_gpus = [1, 2, 3]
-    ignore_gpu = np.append([0], np.arange(4,20)).tolist()
+    available_gpus = [1, 2, 3, 4, 5]
+    ignore_gpu = np.append([0], np.arange(available_gpus[-1]+1, 20)).tolist()
 
     #now define the optimizer.
     opt = mipego(search_space, objective, model1, second_surrogate=model2,
                     minimize=True, max_eval=100, 
                     infill='HVI', n_init_sample=30, 
-                    n_point=1, n_job=3, optimizer='MIES', 
+                    n_point=1, n_job=5, optimizer='MIES', 
                     verbose=True, random_seed=42, available_gpus=available_gpus, 
                     ignore_gpu=ignore_gpu,
                     bi_objective=True, 
-                    log_file='./log_file_14_10.txt')
+                    log_file='./log_file_20_10.txt')
 
 
     #run
-    opt.run()
+    # opt.run()
     # incumbent, stop_dict = opt.run()
     # print(incumbent)
-    # print(net_cfg)
-    # model, train_results_df, test_results_df = obj_function(net_cfg, cfg=None)
 
-    # return model, train_results_df, test_results_df
+    #1
+    # net_cfg = {'num_rec': 2, 'max_time': 32, 'neuron_0': 71, 'neuron_1': 73, 'neuron_2': 87, 'neuron_3': 82,
+    #  'activation_0': 'tanh', 'activation_1': 'sigmoid', 'activation_2': 'sigmoid', 'activation_3': 'tanh',
+    #   'dropout_0': 0.24266300776826166, 'dropout_1': 0.7408138592886706, 'dropout_2': 0.5854999125989773,
+    #    'dropout_3': 0.42984661599610874, 'recurrent_dropout_0': 0.005160478905126479,
+    #     'recurrent_dropout_1': 0.10289962593320462, 'recurrent_dropout_2': 0.22379199475625974,
+    #      'recurrent_dropout_3': 0.19489626209592933, 'final_activation_0': 'softplus',
+    #       'final_activation_1': 'softplus', 'percentage': 61, 'rul': 122, 'rul_style': 'nonlinear',
+    #        'lr': 0.0014966608919248618, 'batch': '32'}
+    
+    #2
+    # net_cfg = {"num_rec": 2, "max_time": 25, "neuron_0": 74, "neuron_1": 71, "neuron_2": 78, "neuron_3": 68,
+    #  "activation_0": "tanh", "activation_1": "sigmoid", "activation_2": "sigmoid", "activation_3": "tanh",
+    #   "dropout_0": 0.04198965650706104, "dropout_1": 0.6518949855946009, "dropout_2": 0.5134433415117658,
+    #    "dropout_3": 0.44181882048621723, "recurrent_dropout_0": 0.011379281378212352, "recurrent_dropout_1": 0.07877843876273939,
+    #     "recurrent_dropout_2": 0.25685072170110057, "recurrent_dropout_3": 0.16640448683710898, "final_activation_0": "softplus",
+    #      "final_activation_1": "softplus", "percentage": 63, "rul": 125, "rul_style": "nonlinear", "lr": 0.021745779733326226, "batch": "256"}
+
+    #3
+    net_cfg = {'num_rec': 4, 'max_time': 24, 'neuron_0': 76, 'neuron_1': 75, 'neuron_2': 74, 'neuron_3': 66, 'activation_0': 'tanh',
+     'activation_1': 'tanh', 'activation_2': 'sigmoid', 'activation_3': 'sigmoid', 'dropout_0': 0.018692516794622607,
+      'dropout_1': 0.8002018342665917, 'dropout_2': 0.615094589188039, 'dropout_3': 0.08230738757019833, 'recurrent_dropout_0': 0.6421264747391056,
+       'recurrent_dropout_1': 0.8933998465284962, 'recurrent_dropout_2': 0.6402495109098905, 'recurrent_dropout_3': 0.6693624215836003,
+        'final_activation_0': 'softplus', 'final_activation_1': 'softplus', 'percentage': 62, 'rul': 124, 'rul_style': 'nonlinear',
+         'lr': 0.0008896860421074306, 'batch': '32'}
+    print(net_cfg)
+    model, train_results_df, test_results_df, test_x_orig, test_y_orig, scaler, train_x, test_x = obj_function(net_cfg, cfg=None)
+
+    return model, train_results_df, test_results_df, test_x_orig, test_y_orig, scaler, train_x, test_x
 
 
 if __name__ == '__main__':

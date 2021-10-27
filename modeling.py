@@ -43,7 +43,7 @@ def network(train_X, train_y, test_X, test_y, net_cfg, cfg):
                                 return_sequences=False)(masking_layer)
 
     dense_1 = keras.layers.Dense(2)(gru_last)
-    custom_activation = Activate(net_cfg)
+    custom_activation = Activate(net_cfg=net_cfg)
     outputs = keras.layers.Activation(custom_activation)(dense_1)
 
     model = keras.Model(inputs=inputs, outputs=outputs, name="weibull_params")

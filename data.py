@@ -26,7 +26,10 @@ def load_data():
 
     train_idx = np.random.choice(range(train_x_orig.unit_number.unique().max()+1), replace=False, size=80)  # selecting 80 units for training
     train_idx.sort()
+
+    # print(train_idx)
     vld_idx = np.array([x for x in range(train_x_orig.unit_number.unique().max()+1) if x not in train_idx])  # remaining are validation indices
+    # print(vld_idx)
 
     train = train_x_orig[train_x_orig.unit_number.isin(train_idx)]  # training data
     train.reset_index(drop=True, inplace=True)
@@ -43,7 +46,7 @@ def load_data():
     temp_or_test_cycles = []
     counter = -1
 
-    for i in vld.unit_number.unique():
+    for i in set(vld.unit_number.unique()):
         # print(f'unit number is {i}')
         for j in range(1,6):  # 5 truncations per instance
             counter += 1
@@ -51,12 +54,15 @@ def load_data():
             temp_df = vld[vld.unit_number == i]
             temp_df.reset_index(drop=True, inplace=True)  # important
             length = temp_df.shape[0]
+            # print(length)
             temp_or_test_cycles.append(length)
-            level = np.random.choice(np.arange(20, 96), 1)[0]
+            level = np.random.choice(np.arange(5, 96), 1)[0]
             r = np.int(length * (1 - level / 100))
             # test_index.append(X_test_or[X_test_or.unit_number == i].index.tolist()[
             #                     :r + 1])  # check this with train_x_orig instead of X_test_or (probably it's the same)
             temp_df = temp_df.truncate(after=r)
+            # print(temp_df.shape[0])
+            # print('\n')
             temp_df['unit_number'] = np.repeat(counter, temp_df.shape[0])
             vld_trunc.append(temp_df)
             max_cycle.append(length)
@@ -68,4 +74,4 @@ def load_data():
     vld_trunc.reset_index(drop=True, inplace=True)
     # print(f'max len per unit is {max_cycle}')
 
-    return train, feature_cols, vld_trunc, vld, np.array(max_cycle)
+    return train, feature_cols, vld_trunc, vld, np.array(max_cycle), test_x_orig, test_y_orig

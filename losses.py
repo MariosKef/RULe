@@ -52,8 +52,9 @@ class CustomLoss(keras.losses.Loss):
 
     def __init__(self,
                  kind,
-                 reduce_loss=False):
-        super().__init__()
+                 reduce_loss=False,
+                 **kwargs):
+        super().__init__(**kwargs)
         self.kind = kind
         self.reduce_loss = reduce_loss
 
