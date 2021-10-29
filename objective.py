@@ -37,7 +37,7 @@ def obj_function(net_cfg, cfg=None):
         'random_state': 21,
         'mask_value': -99,
         'reps': 30,
-        'epochs': 20,
+        'epochs': 50,
         'batches': 64}
 
     # deleting model if it exists
@@ -68,7 +68,7 @@ def obj_function(net_cfg, cfg=None):
     train_all = []
     test_all = []
 
-    file = 'results_no_cv_HO_29_10_test'
+    file = 'results_no_cv_HO_29_10'
     columns = ['fold', 'rmse_train', 'mae_train', 'r2_train','std_train', 'rmse_test', 'mae_test', 'r2_test', 'std_test', 'net_cfg']
     results = pd.DataFrame(columns=columns)
     start = time.time()
