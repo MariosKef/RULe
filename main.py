@@ -1,7 +1,7 @@
 # various
 import os
 os.environ["CUDA_DEVICE_ORDER"]="PCI_BUS_ID"
-os.environ["CUDA_VISIBLE_DEVICES"]="6,7,8,9"
+os.environ["CUDA_VISIBLE_DEVICES"]="6,7,8,9,10"
 import subprocess, sys
 from subprocess import STDOUT, check_output
 import re
@@ -103,14 +103,14 @@ def main():
     model1 = RandomForest(levels=search_space.levels)
     model2 = RandomForest(levels=search_space.levels)
 
-    available_gpus = [6,7,8,9]
+    available_gpus = [6, 7, 8, 9, 10]
     ignore_gpu = np.append([0], np.arange(available_gpus[-1]+1, 20)).tolist()
 
     #now define the optimizer.
     opt = mipego(search_space, objective, model1, second_surrogate=model2,
-                    minimize=True, max_eval=3, 
-                    infill='HVI', n_init_sample=2, 
-                    n_point=1, n_job=2, optimizer='MIES', 
+                    minimize=True, max_eval=100, 
+                    infill='HVI', n_init_sample=30, 
+                    n_point=1, n_job=5, optimizer='MIES', 
                     verbose=True, random_seed=42, available_gpus=available_gpus, 
                     ignore_gpu=ignore_gpu,
                     bi_objective=True, 
