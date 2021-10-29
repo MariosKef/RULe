@@ -291,7 +291,7 @@ class mipego(object):
                 ans.append(x)
         return ans
 
-    def _eval_gpu(self, x, gpu=0, runs=1):
+    def _eval_gpu(self, x, gpu=1, runs=1):  # changed gpu=0 to gpu=1
         """
         evaluate one solution
         """
@@ -307,14 +307,14 @@ class mipego(object):
             ans = self.obj_func(x.to_dict(), gpu_no=gpu_patch, **self.obj_func_params)
             self.logger.info(f'ans is: {ans}')
 
-            time_ans,loss_ans,success= ans[0],ans[1],ans[2]
+            time_ans,loss_ans,success= ans[0], ans[1], ans[2]
             
             if success:
                 break
             else:
                 while True:
                     print('gpu ' + str(gpu_patch) + ' failed to give answer, searching for new gpu')
-                    available_gpus_patch = gp.getAvailable()
+                    available_gpus_patch = gp.getAvailable(limit=20)
                     for i in range(len(self.ignore_gpu)):
                         try:
                             available_gpus_patch.remove(self.ignore_gpu[i])
@@ -628,7 +628,7 @@ class mipego(object):
             self.n_left -= 1
             if self.n_left < 0:
                 self.n_left = 0
-            self.iter_count += 1
+            self.eval_count += 1  # instead of self.iter_count
             
             if self.data is None:
                 self.data = [confs_]
@@ -723,7 +723,7 @@ class mipego(object):
         self.logger.info(self.incumbent.to_dict())
         
         # save the iterative data configuration to csv
-        # self.incumbent.to_csv(self.data_file, header=False, index=False, mode='a')
+        self.incumbent.to_csv(self.data_file, header=False, index=False, mode='a')
         return self.incumbent, self.incumbent.fitness
 
     def run(self,restart=False):
@@ -748,8 +748,8 @@ class mipego(object):
                 for i in range(self.n_init_sample):
                     self.evaluation_queue.put(datasamples[i])
 
-                self.iter_count -= self.n_init_sample# because initial samples are in queue, counters count them as normal samples, so this needs to be coutered
-                self.n_left += self.n_init_sample
+                self.iter_count += self.n_init_sample  # because initial samples are in queue, counters count them as normal samples, so this needs to be coutered
+                self.n_left -= self.n_init_sample
             else:
                 for i in range(self.n_jobs):
                     self.evaluation_queue.put(self.data[i-self.n_jobs])

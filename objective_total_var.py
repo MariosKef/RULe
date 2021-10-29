@@ -115,6 +115,14 @@ def obj_function(net_cfg, cfg=None):
         for i in range(cfg['reps']):
             tf.random.set_seed(i)
             train_predict = model(train_x, training=True).numpy()
+            a, b = train_predict[:,0], train_predict[:,1]
+
+            y_ = b*np.random.weibull(a, size=cfg['in_reps'])
+
+            
+
+ 
+
             train_predict_1.append(train_predict[:, 0].reshape(train_predict[:, 0].shape[0], 1))
             train_predict_2.append(train_predict[:, 1].reshape(train_predict[:, 1].shape[0], 1))
 
