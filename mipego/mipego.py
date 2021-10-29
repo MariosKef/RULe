@@ -291,7 +291,7 @@ class mipego(object):
                 ans.append(x)
         return ans
 
-    def _eval_gpu(self, x, gpu=1, runs=1):  # changed gpu=0 to gpu=1
+    def _eval_gpu(self, x, gpu=6, runs=1):  # changed gpu=0 to gpu=1
         """
         evaluate one solution
         """
