@@ -68,7 +68,7 @@ def obj_function(net_cfg, cfg=None):
     train_all = []
     test_all = []
 
-    file = 'results_no_cv_HO_20_10'
+    file = 'results_no_cv_HO_29_10_test'
     columns = ['fold', 'rmse_train', 'mae_train', 'r2_train','std_train', 'rmse_test', 'mae_test', 'r2_test', 'std_test', 'net_cfg']
     results = pd.DataFrame(columns=columns)
     start = time.time()
@@ -222,9 +222,9 @@ def obj_function(net_cfg, cfg=None):
     results['std_test'] = std_test
     results['net_cfg'] = json.dumps(net_cfg)
 
-    print(results)
+    # print(results)
 
-    return model, train_results_df, test_results_df, test_x_orig, test_y_orig, scaler, train_x, test_x
+    # return model, train_results_df, test_results_df, test_x_orig, test_y_orig, scaler, train_x, test_x
     
     if os.path.isfile(file):
         results.to_csv('./' + file, mode='a', index=False, header=False)
@@ -240,12 +240,12 @@ def obj_function(net_cfg, cfg=None):
 
 
 #system arguments (configuration)
-# if len(sys.argv) > 2 and sys.argv[1] == '--cfg':
-#     cfg = eval(sys.argv[2])
-#     if len(sys.argv) > 3:
-#         gpu = sys.argv[3]
+if len(sys.argv) > 2 and sys.argv[1] == '--cfg':
+    cfg = eval(sys.argv[2])
+    if len(sys.argv) > 3:
+        gpu = sys.argv[3]
         
-#         os.environ["CUDA_DEVICE_ORDER"]="PCI_BUS_ID"   # see issue #152
-#         os.environ["CUDA_VISIBLE_DEVICES"]=str(gpu)
-#     print(obj_function(cfg, None))
-#     k.clear_session()
+        os.environ["CUDA_DEVICE_ORDER"]="PCI_BUS_ID"   # see issue #152
+        os.environ["CUDA_VISIBLE_DEVICES"]=str(gpu)
+    print(obj_function(cfg, None))
+    k.clear_session()
