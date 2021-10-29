@@ -14,6 +14,12 @@ import sys
 # tensorflow
 import tensorflow as tf
 tf.random.set_seed(42)
+
+physical_devices = tf.config.list_physical_devices('GPU') 
+for device in physical_devices:
+    tf.config.experimental.set_memory_growth(device, True)
+
+# sklearn
 from sklearn import pipeline
 from sklearn.feature_selection import VarianceThreshold
 from sklearn.metrics import mean_squared_error, mean_absolute_error, r2_score
