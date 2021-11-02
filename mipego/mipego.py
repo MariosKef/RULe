@@ -303,16 +303,19 @@ class mipego(object):
         # except:
         #ans = [self.obj_func(x.to_dict(), gpu_no=gpu) for i in range(runs)]
         gpu_patch = gpu
-        while True:
+        try_count = 0
+        while try_count < 5:
             ans = self.obj_func(x.to_dict(), gpu_no=gpu_patch, **self.obj_func_params)
             self.logger.info(f'ans is: {ans}')
 
             time_ans,loss_ans,success= ans[0], ans[1], ans[2]
-            
+            try_count += 1
             if success:
                 break
             else:
-                while True:
+                try_gpu_count = 0
+                while try_gpu_count < 5:
+                    try_gpu_count += 1
                     print('gpu ' + str(gpu_patch) + ' failed to give answer, searching for new gpu')
                     available_gpus_patch = gp.getAvailable(limit=20)
                     for i in range(len(self.ignore_gpu)):
@@ -321,7 +324,7 @@ class mipego(object):
                         except:
                             pass
                     if len(available_gpus_patch) > 0:
-                        gpu_patch = available_gpus_patch[0]
+                        gpu_patch = np.random.choice(available_gpus_patch)
                         break
                     else:
                         print('no gpus available, waiting 60 seconds')
