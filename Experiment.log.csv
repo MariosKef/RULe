@@ -1,0 +1,5 @@
+Date, Description, Epochs, Train R2, Train RMSE, Test R2, Test RMSE
+28/10/2021, Training on entire dataset on best HP (knee-point) from experiment on 20/10/2021 until process plateaus or ends, 100, 0.9176334618088126,9.780263948774268,0.34743556409305676,29.394772233694344
+29/10/2021, Training on 200 epochs. Bas corrected issue.
+2/11/2021, Training on entire dataset on best HP (knee-point) from experiment on 29/10/2021 until process plateaus or ends, 75, 0.9923057400339986, 2.783821078960556, 0.01414039492678043, 33.061158991527016
+

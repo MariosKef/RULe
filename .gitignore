@@ -15,5 +15,5 @@ for_matheus/
 RUL_SA_prelim_results_cmapss_1st_linear.csv
 my_model*
 preliminary_experiments
-saved_models
+saved_models_*
 logs
