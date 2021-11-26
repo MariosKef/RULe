@@ -47,7 +47,7 @@ def obj_function(net_cfg, cfg=None):
             "random_state": 21,
             "mask_value": -99,
             "reps": 30,
-            "epochs": 5,
+            "epochs": 2,
             "batches": 64,
         }
 
@@ -82,7 +82,7 @@ def obj_function(net_cfg, cfg=None):
     train_all = []
     test_all = []
 
-    file = "results_no_cv_HO_29_10"
+    file = "results_no_cv_HO_26_11_test"
     columns = [
         "fold",
         "rmse_train",
@@ -206,38 +206,20 @@ def obj_function(net_cfg, cfg=None):
             ]
         )
 
-        train_predict = np.resize(
-            train_predict, (train_x.shape[0], 4)
-        )  # changed from 2 to 4
+        train_predict = np.resize(train_predict, (train_x.shape[0], 4))
         train_result = np.concatenate((train_y, train_predict), axis=1)
         train_results_df = pd.DataFrame(
             train_result,
             columns=["T", "mean_alpha", "mean_beta", "std_alpha", "std_beta"],
-        )  # (add 'E' for event)
+        )
         train_results_df["unit_number"] = train_x_orig["unit_number"].to_numpy()
         train_results_df["time"] = train_x_orig["time"].to_numpy()
 
         train_results_df["predicted_mu"] = train_results_df[
             ["mean_alpha", "mean_beta"]
         ].apply(lambda row: weibull_mean(row[0], row[1]), axis=1)
-        train_results_df["predicted_std+"] = train_results_df[
-            ["mean_alpha", "mean_beta", "std_alpha", "std_beta"]
-        ].apply(
-            lambda row: weibull_mean(
-                row[0] + 1.96 * row[2] / np.sqrt(cfg["reps"]),
-                row[1] + 1.96 * row[3] / np.sqrt(cfg["reps"]),
-            ),
-            axis=1,
-        )
-        train_results_df["predicted_std-"] = train_results_df[
-            ["mean_alpha", "mean_beta", "std_alpha", "std_beta"]
-        ].apply(
-            lambda row: weibull_mean(
-                row[0] - 1.96 * row[2] / np.sqrt(cfg["reps"]),
-                row[1] - 1.96 * row[3] / np.sqrt(cfg["reps"]),
-            ),
-            axis=1,
-        )
+        train_results_df["uncertainty"] = np.mean(train_predict[:, 2:], axis=1)
+
         # predicting the rul on the test fold
         test_predict_1 = []
         test_predict_2 = []
@@ -280,31 +262,14 @@ def obj_function(net_cfg, cfg=None):
         test_results_df = pd.DataFrame(
             test_result,
             columns=["T", "mean_alpha", "mean_beta", "std_alpha", "std_beta"],
-        )  # (add 'E' for event)
+        )
 
         test_results_df["predicted_mu"] = test_results_df[
             ["mean_alpha", "mean_beta"]
         ].apply(lambda row: weibull_mean(row[0], row[1]), axis=1)
-        test_results_df["predicted_std+"] = test_results_df[
-            ["mean_alpha", "mean_beta", "std_alpha", "std_beta"]
-        ].apply(
-            lambda row: weibull_mean(
-                row[0] + 1.96 * row[2] / np.sqrt(cfg["reps"]),
-                row[1] + 1.96 * row[3] / np.sqrt(cfg["reps"]),
-            ),
-            axis=1,
-        )
-        test_results_df["predicted_std-"] = test_results_df[
-            ["mean_alpha", "mean_beta", "std_alpha", "std_beta"]
-        ].apply(
-            lambda row: weibull_mean(
-                row[0] - 1.96 * row[2] / np.sqrt(cfg["reps"]),
-                row[1] - 1.96 * row[3] / np.sqrt(cfg["reps"]),
-            ),
-            axis=1,
-        )
-        # General administration
+        test_results_df["uncertainty"] = np.mean(test_predict[:, 2:], axis=1)
 
+        # General administration
         train_all.append(train_results_df)
         test_all.append(test_results_df)
 
@@ -327,10 +292,7 @@ def obj_function(net_cfg, cfg=None):
         r2_train.append(
             r2_score(train_results_df["predicted_mu"], train_results_df["T"])
         )
-        std_train.append(
-            (train_results_df["std_alpha"].mean() + train_results_df["std_beta"].mean())
-            / 2
-        )
+        std_train.append(train_results_df["uncertainty"].mean())
 
         # test:
         rmse_test.append(
@@ -344,10 +306,7 @@ def obj_function(net_cfg, cfg=None):
             (mean_absolute_error(test_results_df["predicted_mu"], test_results_df["T"]))
         )
         r2_test.append(r2_score(test_results_df["predicted_mu"], test_results_df["T"]))
-        std_test.append(
-            (test_results_df["std_alpha"].mean() + test_results_df["std_beta"].mean())
-            / 2
-        )
+        std_test.append(test_results_df["uncertainty"].mean())
     except:
         success = False
 
@@ -363,11 +322,11 @@ def obj_function(net_cfg, cfg=None):
     results["rmse_train"] = rmse_train
     results["mae_train"] = mae_train
     results["r2_train"] = r2_train
-    results["std_train"] = std_train
+    results["uncertainty"] = std_train
     results["rmse_test"] = rmse_test
     results["mae_test"] = mae_test
     results["r2_test"] = r2_test
-    results["std_test"] = std_test
+    results["uncertainty"] = std_test
     results["net_cfg"] = json.dumps(net_cfg)
 
     print(results)

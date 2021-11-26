@@ -2,7 +2,7 @@
 import os
 
 os.environ["CUDA_DEVICE_ORDER"] = "PCI_BUS_ID"
-os.environ["CUDA_VISIBLE_DEVICES"] = "1,2,3,4,5,6,7,8"
+os.environ["CUDA_VISIBLE_DEVICES"] = "1,2,3"
 import subprocess, sys
 from subprocess import STDOUT, check_output
 import re
@@ -15,9 +15,9 @@ from mipego import mipego
 from mipego.Surrogate import RandomForest
 from mipego.SearchSpace import ContinuousSpace, NominalSpace, OrdinalSpace
 
-# from objective import obj_function
+from objective import obj_function
 
-from objective_total_var import obj_function
+# from objective_total_var import obj_function
 
 
 class obj_func(object):
@@ -52,7 +52,7 @@ class obj_func(object):
 def main():
 
     # objective function
-    objective = obj_func("./objective_total_var.py")
+    objective = obj_func("./objective.py")
 
     # hyperparameter configuration
     max_time = OrdinalSpace([20, 40], "max_time")  # maximum lookback
@@ -146,7 +146,7 @@ def main():
     model1 = RandomForest(levels=search_space.levels)
     model2 = RandomForest(levels=search_space.levels)
 
-    available_gpus = [1, 2, 3, 4, 5, 6, 7, 8]
+    available_gpus = [1, 2, 3]
     ignore_gpu = np.append([0], np.arange(available_gpus[-1] + 1, 20)).tolist()
 
     # now define the optimizer.
@@ -156,22 +156,22 @@ def main():
         model1,
         second_surrogate=model2,
         minimize=True,
-        max_eval=200,
+        max_eval=3,
         infill="HVI",
-        n_init_sample=100,
+        n_init_sample=2,
         n_point=1,
-        n_job=8,
+        n_job=2,
         optimizer="MIES",
         verbose=True,
         random_seed=42,
         available_gpus=available_gpus,
         ignore_gpu=ignore_gpu,
         bi_objective=True,
-        log_file="./log_file_19_11.txt",
+        log_file="./log_file_26_11_test.txt",
     )
 
     # run
-    # opt.run()
+    opt.run()
     # incumbent, stop_dict = opt.run()
     # print(incumbent)
 
@@ -199,33 +199,31 @@ def main():
     #     "percentage": 62,
     #     "rul": 124,
     #     "rul_style": "nonlinear",
-    #     "lr": 0.0008896860421074306,
-    #     "batch": "32",
+    #     "lr": "0.0008896860421074306",
+    #     "batch": "128",
     # }
-    print(net_cfg)
-    (
-        model,
-        train_results_df,
-        test_results_df,
-        test_x_orig,
-        test_y_orig,
-        scaler,
-        train_x,
-        test_x,
-        total_res_train,
-    ) = obj_function(net_cfg, cfg=None)
+    # print(net_cfg)
+    # (
+    #     model,
+    #     train_results_df,
+    #     test_results_df,
+    #     test_x_orig,
+    #     test_y_orig,
+    #     scaler,
+    #     train_x,
+    #     test_x,
+    # ) = obj_function(net_cfg, cfg=None)
 
-    return (
-        model,
-        train_results_df,
-        test_results_df,
-        test_x_orig,
-        test_y_orig,
-        scaler,
-        train_x,
-        test_x,
-        total_res_train,
-    )
+    # return (
+    #     model,
+    #     train_results_df,
+    #     test_results_df,
+    #     test_x_orig,
+    #     test_y_orig,
+    #     scaler,
+    #     train_x,
+    #     test_x,
+    # )
 
 
 if __name__ == "__main__":

@@ -188,10 +188,6 @@ def load_data():
 
 def main(net_cfg, cfg):
     k.clear_session()
-    try:
-        del model
-    except:
-        pass
 
     train_x, train_y, _, _, _ = load_data()
 
@@ -232,7 +228,7 @@ if __name__ == "__main__":
         "percentage": 73,
         "rul": 121,
         "rul_style": "nonlinear",
-        "lr": 0.005357912753227542,
+        "lr": "0.005357912753227542",
         "batch": "128",
     }
 

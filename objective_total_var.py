@@ -10,6 +10,7 @@ import numpy as np
 import pandas as pd
 import json
 import sys
+from datetime import datetime
 
 # tensorflow
 import tensorflow as tf
@@ -34,6 +35,8 @@ def weibull_mean(alpha, beta):
 
 model = None
 
+date = datetime.today().strftime("%d_%m_%Y")
+
 
 def obj_function(net_cfg, cfg=None):
 
@@ -44,7 +47,7 @@ def obj_function(net_cfg, cfg=None):
             "random_state": 21,
             "mask_value": -99,
             "reps": 30,
-            "epochs": 5,
+            "epochs": 100,
             "batches": 64,
             "in_reps": 10,
         }
@@ -80,7 +83,7 @@ def obj_function(net_cfg, cfg=None):
     train_all = []
     test_all = []
 
-    file = "results_no_cv_HO_19_11"
+    file = "results_no_cv_HO_" + date
     columns = [
         "fold",
         "rmse_train",
@@ -175,9 +178,17 @@ def obj_function(net_cfg, cfg=None):
 
             res = []
             for j in range(a.shape[0]):
-                res.append(a[j] * np.random.weibull(b[j], cfg["in_reps"]))
-            total_res_train.append(res)
+                for _ in range(cfg["in_reps"]):
+                    sample = a[j] * np.random.weibull(b[j])
+                    while np.isinf(sample):
+                        sample = a[j] * np.random.weibull(b[j])
+                    res.append(sample)
+        total_res_train.append(np.array(res))
+
         total_res_train = np.array(total_res_train)
+        total_res_train = np.reshape(
+            total_res_train, (cfg["reps"], a.shape[0], cfg["in_reps"])
+        )
 
         train_predict = np.mean(total_res_train, axis=(0, 2))
         train_predict = np.reshape(train_predict, (train_x.shape[0], 1))
@@ -194,9 +205,17 @@ def obj_function(net_cfg, cfg=None):
 
             res = []
             for j in range(a.shape[0]):
-                res.append(a[j] * np.random.weibull(b[j], cfg["in_reps"]))
-            total_res_test.append(res)
+                for _ in range(cfg["in_reps"]):
+                    sample = a[j] * np.random.weibull(b[j])
+                    while np.isinf(sample):
+                        sample = a[j] * np.random.weibull(b[j])
+                    res.append(sample)
+        total_res_test.append(np.array(res))
+
         total_res_test = np.array(total_res_test)
+        total_res_test = np.reshape(
+            total_res_test, (cfg["reps"], a.shape[0], cfg["in_reps"])
+        )
 
         test_predict = np.mean(total_res_test, axis=(0, 2))
         test_predict = np.reshape(test_predict, (test_x.shape[0], 1))
@@ -255,7 +274,7 @@ def obj_function(net_cfg, cfg=None):
     results["rmse_train"] = rmse_train
     results["mae_train"] = mae_train
     results["r2_train"] = r2_train
-    results["std_train"] = np.std(total_res_train)
+    results["std_train"] = np.sum(np.std(total_res_train))
     results["rmse_test"] = rmse_test
     results["mae_test"] = mae_test
     results["r2_test"] = r2_test
@@ -299,5 +318,8 @@ if len(sys.argv) > 2 and sys.argv[1] == "--cfg":
 
         os.environ["CUDA_DEVICE_ORDER"] = "PCI_BUS_ID"  # see issue #152
         os.environ["CUDA_VISIBLE_DEVICES"] = str(gpu)
+        physical_devices = tf.config.list_physical_devices("GPU")
+        for device in physical_devices:
+            tf.config.experimental.set_memory_growth(device, True)
     print(obj_function(cfg, None))
     k.clear_session()
