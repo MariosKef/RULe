@@ -2,7 +2,7 @@
 import os
 
 os.environ["CUDA_DEVICE_ORDER"] = "PCI_BUS_ID"
-os.environ["CUDA_VISIBLE_DEVICES"] = "1,2,3"
+os.environ["CUDA_VISIBLE_DEVICES"] = "1,2,3,4,5,6,7,8"
 import subprocess, sys
 from subprocess import STDOUT, check_output
 import re
@@ -146,7 +146,7 @@ def main():
     model1 = RandomForest(levels=search_space.levels)
     model2 = RandomForest(levels=search_space.levels)
 
-    available_gpus = [1, 2, 3]
+    available_gpus = [1, 2, 3, 4, 5, 6, 7, 8]
     ignore_gpu = np.append([0], np.arange(available_gpus[-1] + 1, 20)).tolist()
 
     # now define the optimizer.
@@ -156,18 +156,18 @@ def main():
         model1,
         second_surrogate=model2,
         minimize=True,
-        max_eval=3,
+        max_eval=200,
         infill="HVI",
-        n_init_sample=2,
+        n_init_sample=30,
         n_point=1,
-        n_job=2,
+        n_job=8,
         optimizer="MIES",
         verbose=True,
         random_seed=42,
         available_gpus=available_gpus,
         ignore_gpu=ignore_gpu,
         bi_objective=True,
-        log_file="./log_file_26_11_test.txt",
+        log_file="./log_file_26_11.txt",
     )
 
     # run

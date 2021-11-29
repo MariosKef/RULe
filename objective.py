@@ -47,7 +47,7 @@ def obj_function(net_cfg, cfg=None):
             "random_state": 21,
             "mask_value": -99,
             "reps": 30,
-            "epochs": 2,
+            "epochs": 50,
             "batches": 64,
         }
 
@@ -82,7 +82,7 @@ def obj_function(net_cfg, cfg=None):
     train_all = []
     test_all = []
 
-    file = "results_no_cv_HO_26_11_test"
+    file = "results_no_cv_HO_26_11"
     columns = [
         "fold",
         "rmse_train",
@@ -220,6 +220,8 @@ def obj_function(net_cfg, cfg=None):
         ].apply(lambda row: weibull_mean(row[0], row[1]), axis=1)
         train_results_df["uncertainty"] = np.mean(train_predict[:, 2:], axis=1)
 
+        # C = train_results_df["uncertainty"].isnull().values.any()
+
         # predicting the rul on the test fold
         test_predict_1 = []
         test_predict_2 = []
@@ -268,6 +270,8 @@ def obj_function(net_cfg, cfg=None):
             ["mean_alpha", "mean_beta"]
         ].apply(lambda row: weibull_mean(row[0], row[1]), axis=1)
         test_results_df["uncertainty"] = np.mean(test_predict[:, 2:], axis=1)
+
+        # C_ = test_results_df["uncertainty"].isnull().values.any()
 
         # General administration
         train_all.append(train_results_df)
@@ -322,11 +326,11 @@ def obj_function(net_cfg, cfg=None):
     results["rmse_train"] = rmse_train
     results["mae_train"] = mae_train
     results["r2_train"] = r2_train
-    results["uncertainty"] = std_train
+    results["uncertainty_train"] = std_train
     results["rmse_test"] = rmse_test
     results["mae_test"] = mae_test
     results["r2_test"] = r2_test
-    results["uncertainty"] = std_test
+    results["uncertainty_test"] = std_test
     results["net_cfg"] = json.dumps(net_cfg)
 
     print(results)
@@ -348,9 +352,9 @@ def obj_function(net_cfg, cfg=None):
         results.to_csv("./" + file, mode="w", index=False, header=True)
 
     if np.isfinite(results["rmse_test"].mean()) and np.isfinite(
-        results["std_test"].mean()
+        results["uncertainty_test"].mean()
     ):
-        return results["rmse_test"].mean(), results["std_test"].mean(), True
+        return results["rmse_test"].mean(), results["uncertainty_test"].mean(), True
     else:
         return 1e4, 1e4, False  # not successful
     # end = time.time()
