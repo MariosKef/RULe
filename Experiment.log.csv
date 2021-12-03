@@ -10,4 +10,5 @@ Date, Description, Notes, Epochs, Train R2, Train RMSE, Test R2, Test RMSE
 25/11/2021, Started running bi-objective mipego experiments with total variance, Had issues with this (stagnant process) - aborted, 100 (init=30),
 26/11/2021, Training on entire dataset on best configs found from collected results of 25/11/2021, Had issues with this due to infinity,
 26/11/2021, Run MIPEGO on objective on the low_std branch, It runs-no problem,
-29/11/2021, Run MIPEGO on objective_total_var, It runs-no problem,
+29/11/2021, Run MIPEGO on objective_total_var, It runs-no problem,50,
+2/11/2021, Run MIPEGO on normal objective with median instead of mean, It runs-no problem,50 

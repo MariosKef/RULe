@@ -82,21 +82,19 @@ def obj_function(net_cfg, cfg=None):
     train_all = []
     test_all = []
 
-    file = "results_no_cv_HO_26_11"
+    file = "results_no_cv_HO_02_12"
     columns = [
-        "fold",
         "rmse_train",
         "mae_train",
         "r2_train",
-        "std_train",
+        "uncertainty_train",
         "rmse_test",
         "mae_test",
         "r2_test",
-        "std_test",
+        "uncertainty_test",
         "net_cfg",
     ]
     results = pd.DataFrame(columns=columns)
-    start = time.time()
 
     # Pre-processing data
     scaler = pipeline.Pipeline(
@@ -180,8 +178,8 @@ def obj_function(net_cfg, cfg=None):
                 train_predict[:, 1].reshape(train_predict[:, 1].shape[0], 1)
             )
 
-        train_predict_1_mean = np.mean(np.hstack(train_predict_1), axis=1)
-        train_predict_2_mean = np.mean(np.hstack(train_predict_2), axis=1)
+        train_predict_1_mean = np.median(np.hstack(train_predict_1), axis=1)
+        train_predict_2_mean = np.median(np.hstack(train_predict_2), axis=1)
         train_predict_1_mean = train_predict_1_mean.reshape(
             train_predict_1_mean.shape[0], 1
         )
@@ -235,8 +233,8 @@ def obj_function(net_cfg, cfg=None):
                 test_predict[:, 1].reshape(test_predict[:, 1].shape[0], 1)
             )
 
-        test_predict_1_mean = np.mean(np.hstack(test_predict_1), axis=1)
-        test_predict_2_mean = np.mean(np.hstack(test_predict_2), axis=1)
+        test_predict_1_mean = np.median(np.hstack(test_predict_1), axis=1)
+        test_predict_2_mean = np.median(np.hstack(test_predict_2), axis=1)
         test_predict_1_mean = test_predict_1_mean.reshape(
             test_predict_1_mean.shape[0], 1
         )
@@ -322,7 +320,6 @@ def obj_function(net_cfg, cfg=None):
         return 1e4, 1e4, False  # not successful
 
     # registering results
-    # results['fold'] = np.arange(cfg['cv'])
     results["rmse_train"] = rmse_train
     results["mae_train"] = mae_train
     results["r2_train"] = r2_train

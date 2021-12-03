@@ -3,7 +3,7 @@ import os
 os.environ["CUDA_DEVICE_ORDER"] = "PCI_BUS_ID"
 os.environ[
     "CUDA_VISIBLE_DEVICES"
-] = "1,2,3,4"  # uncomment in case running ONLY on CPU is required
+] = "1,2,3,4,5"  # uncomment in case running ONLY on CPU is required
 
 import tensorflow as tf
 
@@ -23,6 +23,7 @@ import pandas as pd
 import math
 from datetime import datetime
 import sys
+import time
 
 from sklearn import pipeline
 from sklearn.feature_selection import VarianceThreshold
@@ -41,11 +42,11 @@ def network(train_X, train_y, net_cfg, cfg):
     nan_terminator = callbacks.TerminateOnNaN()
     reduce_lr = callbacks.ReduceLROnPlateau(monitor="loss")
     early_stopping = callbacks.EarlyStopping(monitor="loss", patience=5)
-    checkpoint_filepath = "./saved_models_2_11/cp-{epoch:04d}.ckpt"
+    checkpoint_filepath = "./saved_models_3_12/cp-{epoch:04d}.ckpt"
     checkpoint = callbacks.ModelCheckpoint(
         filepath=checkpoint_filepath, monitor="loss", verbose=1
     )
-    logdir = "logs/test_2_11"  # + datetime.now().strftime("%Y%m%d-%H%M%S")
+    logdir = "logs/test_3_12"  # + datetime.now().strftime("%Y%m%d-%H%M%S")
     tensorboard = callbacks.TensorBoard(log_dir=logdir)
 
     window = train_X.shape[1]
@@ -84,7 +85,7 @@ def network(train_X, train_y, net_cfg, cfg):
         # rmse = tf.keras.metrics.RootMeanSquaredError()
         model.compile(
             loss=CustomLoss(kind="continuous", reduce_loss=True),
-            optimizer=Adam(lr=net_cfg["lr"], clipvalue=0.5),
+            optimizer=Adam(lr=eval(net_cfg["lr"]), clipvalue=0.5),
         )
     model.summary()  # uncomment for debugging
 
@@ -197,40 +198,60 @@ def main(net_cfg, cfg):
 if __name__ == "__main__":
     epochs = sys.argv[1]
 
-    # net_cfg = {'num_rec': 4, 'max_time': 24, 'neuron_0': 76, 'neuron_1': 75, 'neuron_2': 74, 'neuron_3': 66, 'activation_0': 'tanh',
-    #     'activation_1': 'tanh', 'activation_2': 'sigmoid', 'activation_3': 'sigmoid', 'dropout_0': 0.018692516794622607,
-    #     'dropout_1': 0.8002018342665917, 'dropout_2': 0.615094589188039, 'dropout_3': 0.08230738757019833, 'recurrent_dropout_0': 0.6421264747391056,
-    #     'recurrent_dropout_1': 0.8933998465284962, 'recurrent_dropout_2': 0.6402495109098905, 'recurrent_dropout_3': 0.6693624215836003,
-    #         'final_activation_0': 'softplus', 'final_activation_1': 'softplus', 'percentage': 62, 'rul': 124, 'rul_style': 'nonlinear',
-    #         'lr': 0.0008896860421074306, 'batch': '32'}
-
     net_cfg = {
-        "num_rec": 3,
-        "max_time": 26,
-        "neuron_0": 73,
+        "num_rec": 2,
+        "max_time": 22,
+        "neuron_0": 78,
         "neuron_1": 71,
-        "neuron_2": 82,
-        "neuron_3": 82,
-        "activation_0": "tanh",
-        "activation_1": "sigmoid",
+        "neuron_2": 87,
+        "neuron_3": 96,
+        "activation_0": "sigmoid",
+        "activation_1": "tanh",
         "activation_2": "sigmoid",
-        "activation_3": "tanh",
-        "dropout_0": 0.06943171652267692,
-        "dropout_1": 0.12639579059484615,
-        "dropout_2": 0.3822443511564662,
-        "dropout_3": 0.4580962846531429,
-        "recurrent_dropout_0": 0.3280089650917844,
-        "recurrent_dropout_1": 0.69930466502713,
-        "recurrent_dropout_2": 0.24506744915217923,
-        "recurrent_dropout_3": 0.7699919737017498,
-        "final_activation_0": "exp",
+        "activation_3": "sigmoid",
+        "dropout_0": 0.18803475666664804,
+        "dropout_1": 0.6040324537064773,
+        "dropout_2": 0.3227885166987346,
+        "dropout_3": 0.2287547425262742,
+        "recurrent_dropout_0": 0.4464387484895227,
+        "recurrent_dropout_1": 0.6236043939191586,
+        "recurrent_dropout_2": 0.3135094606418331,
+        "recurrent_dropout_3": 0.842983970188618,
+        "final_activation_0": "softplus",
         "final_activation_1": "softplus",
-        "percentage": 73,
-        "rul": 121,
+        "percentage": 67,
+        "rul": 127,
         "rul_style": "nonlinear",
-        "lr": "0.005357912753227542",
+        "lr": "1e-3",
         "batch": "128",
     }
+    # net_cfg = {
+    #     "num_rec": 3,
+    #     "max_time": 26,
+    #     "neuron_0": 73,
+    #     "neuron_1": 71,
+    #     "neuron_2": 82,
+    #     "neuron_3": 82,
+    #     "activation_0": "tanh",
+    #     "activation_1": "sigmoid",
+    #     "activation_2": "sigmoid",
+    #     "activation_3": "tanh",
+    #     "dropout_0": 0.06943171652267692,
+    #     "dropout_1": 0.12639579059484615,
+    #     "dropout_2": 0.3822443511564662,
+    #     "dropout_3": 0.4580962846531429,
+    #     "recurrent_dropout_0": 0.3280089650917844,
+    #     "recurrent_dropout_1": 0.69930466502713,
+    #     "recurrent_dropout_2": 0.24506744915217923,
+    #     "recurrent_dropout_3": 0.7699919737017498,
+    #     "final_activation_0": "exp",
+    #     "final_activation_1": "softplus",
+    #     "percentage": 73,
+    #     "rul": 121,
+    #     "rul_style": "nonlinear",
+    #     "lr": "0.005357912753227542",
+    #     "batch": "128",
+    # }
 
     cfg = {
         "cv": 10,
@@ -246,4 +267,8 @@ if __name__ == "__main__":
     print("\n")
     print(cfg)
 
+    start = time.time()
     main(net_cfg, cfg)
+    end = time.time()
+
+    print(f"Elapsed time: {(end-start)/60} minutes")
