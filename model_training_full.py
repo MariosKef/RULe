@@ -3,7 +3,7 @@ import os
 os.environ["CUDA_DEVICE_ORDER"] = "PCI_BUS_ID"
 os.environ[
     "CUDA_VISIBLE_DEVICES"
-] = "1,2,3,4,5"  # uncomment in case running ONLY on CPU is required
+] = "0,1,2,11,12"  # uncomment in case running ONLY on CPU is required
 
 import tensorflow as tf
 
@@ -42,11 +42,11 @@ def network(train_X, train_y, net_cfg, cfg):
     nan_terminator = callbacks.TerminateOnNaN()
     reduce_lr = callbacks.ReduceLROnPlateau(monitor="loss")
     early_stopping = callbacks.EarlyStopping(monitor="loss", patience=5)
-    checkpoint_filepath = "./saved_models_3_12/cp-{epoch:04d}.ckpt"
+    checkpoint_filepath = "./saved_models_9_12/cp-{epoch:04d}.ckpt"
     checkpoint = callbacks.ModelCheckpoint(
         filepath=checkpoint_filepath, monitor="loss", verbose=1
     )
-    logdir = "logs/test_3_12"  # + datetime.now().strftime("%Y%m%d-%H%M%S")
+    logdir = "logs/test_9_12"  # + datetime.now().strftime("%Y%m%d-%H%M%S")
     tensorboard = callbacks.TensorBoard(log_dir=logdir)
 
     window = train_X.shape[1]
@@ -199,30 +199,54 @@ if __name__ == "__main__":
     epochs = sys.argv[1]
 
     net_cfg = {
-        "num_rec": 2,
-        "max_time": 22,
-        "neuron_0": 78,
-        "neuron_1": 71,
-        "neuron_2": 87,
-        "neuron_3": 96,
+        "num_rec": 5,
+        "max_time": 45,
+        "neuron_0": 76,
+        "neuron_1": 177,
+        "neuron_2": 96,
+        "neuron_3": 150,
+        "neuron_4": 195,
+        "neuron_5": 140,
+        "neuron_6": 117,
+        "neuron_7": 113,
+        "neuron_8": 80,
+        "neuron_9": 127,
         "activation_0": "sigmoid",
         "activation_1": "tanh",
-        "activation_2": "sigmoid",
+        "activation_2": "tanh",
         "activation_3": "sigmoid",
-        "dropout_0": 0.18803475666664804,
-        "dropout_1": 0.6040324537064773,
-        "dropout_2": 0.3227885166987346,
-        "dropout_3": 0.2287547425262742,
-        "recurrent_dropout_0": 0.4464387484895227,
-        "recurrent_dropout_1": 0.6236043939191586,
-        "recurrent_dropout_2": 0.3135094606418331,
-        "recurrent_dropout_3": 0.842983970188618,
-        "final_activation_0": "softplus",
-        "final_activation_1": "softplus",
-        "percentage": 67,
-        "rul": 127,
+        "activation_4": "sigmoid",
+        "activation_5": "sigmoid",
+        "activation_6": "sigmoid",
+        "activation_7": "tanh",
+        "activation_8": "tanh",
+        "activation_9": "sigmoid",
+        "dropout_0": 0.1317451292061026,
+        "dropout_1": 0.33078730471815543,
+        "dropout_2": 0.06136439672385036,
+        "dropout_3": 0.02324045813546879,
+        "dropout_4": 0.12165830857644894,
+        "dropout_5": 0.8668039692791406,
+        "dropout_6": 0.49458108701015635,
+        "dropout_7": 0.8692402868162864,
+        "dropout_8": 0.3892537655183355,
+        "dropout_9": 0.2806414016154028,
+        "recurrent_dropout_0": 0.417691002556559,
+        "recurrent_dropout_1": 0.8671496818064206,
+        "recurrent_dropout_2": 0.46713386179379257,
+        "recurrent_dropout_3": 0.6097912652903833,
+        "recurrent_dropout_4": 0.28068435348661575,
+        "recurrent_dropout_5": 0.6965945004237047,
+        "recurrent_dropout_6": 0.6956316044736848,
+        "recurrent_dropout_7": 0.46917122992824856,
+        "recurrent_dropout_8": 0.8784126808130595,
+        "recurrent_dropout_9": 0.11300393778424042,
+        "final_activation_0": "exp",
+        "final_activation_1": "exp",
+        "percentage": 66,
+        "rul": 124,
         "rul_style": "nonlinear",
-        "lr": "1e-3",
+        "lr": "1e-5",
         "batch": "128",
     }
     # net_cfg = {

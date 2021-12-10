@@ -47,7 +47,7 @@ def obj_function(net_cfg, cfg=None):
             "random_state": 21,
             "mask_value": -99,
             "reps": 30,
-            "epochs": 50,
+            "epochs": 100,
             "batches": 64,
         }
 
@@ -82,7 +82,7 @@ def obj_function(net_cfg, cfg=None):
     train_all = []
     test_all = []
 
-    file = "results_no_cv_HO_02_12"
+    file = "results_no_cv_HO_09_12"
     columns = [
         "rmse_train",
         "mae_train",

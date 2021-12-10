@@ -2,8 +2,8 @@
 import os
 
 os.environ["CUDA_DEVICE_ORDER"] = "PCI_BUS_ID"
-os.environ["CUDA_VISIBLE_DEVICES"] = "0,1,2,3,4,5,6,7"
-import subprocess, sys
+os.environ["CUDA_VISIBLE_DEVICES"] = "3,4,5,6,7,8,9,10"
+import subprocess
 from subprocess import STDOUT, check_output
 import re
 import numpy as np
@@ -56,16 +56,16 @@ def main():
     objective = obj_func("./objective.py")
 
     # hyperparameter configuration
-    max_time = OrdinalSpace([20, 40], "max_time")  # maximum lookback
+    max_time = OrdinalSpace([20, 50], "max_time")  # maximum lookback
     # lr_rate = ContinuousSpace([1e-4, 1.0e-1], "lr")  # learning rate
     lr_rate = NominalSpace(
         ["1e-1", "1e-2", "1e-3", "1e-4", "2e-5", "1e-5"], "lr"
     )  # learning rate
-    num_rec = OrdinalSpace([2, 4], "num_rec")  # maximum number of recurrent layers
+    num_rec = OrdinalSpace([2, 10], "num_rec")  # maximum number of recurrent layers
 
     activations = ["tanh", "sigmoid"]  # activations of recurrent layers
     final_activations = ["softplus", "exp"]  # output activations
-    neurons = OrdinalSpace([65, 100], "neuron") * num_rec._ub[0]  # number of neurons
+    neurons = OrdinalSpace([50, 100], "neuron") * num_rec._ub[0]  # number of neurons
     acts = (
         NominalSpace(activations, "activation") * num_rec._ub[0]
     )  # activations of recurrent layers
@@ -77,8 +77,8 @@ def main():
         NominalSpace(final_activations, "final_activation") * 2
     )  # final activations. The "2" because we have 2
     # outputs
-    percentage = OrdinalSpace([60, 75], "percentage")
-    rul = OrdinalSpace([120, 130], "rul")
+    percentage = OrdinalSpace([25, 75], "percentage")
+    rul = OrdinalSpace([110, 130], "rul")
 
     rul_style = NominalSpace(["linear", "nonlinear"], "rul_style")
 
@@ -147,8 +147,10 @@ def main():
     model1 = RandomForest(levels=search_space.levels)
     model2 = RandomForest(levels=search_space.levels)
 
-    available_gpus = [0, 1, 2, 3, 4, 5, 6, 7]
-    ignore_gpu = np.append([0], np.arange(available_gpus[-1] + 1, 20)).tolist()
+    available_gpus = [3, 4, 5, 6, 7, 8, 9, 10]
+    ignore_gpu = np.append(
+        [0, 1, 2], np.arange(available_gpus[-1] + 1, 21)
+    ).tolist()  # before available_gpus[0] is missing
 
     # now define the optimizer.
     opt = mipego(
@@ -157,9 +159,9 @@ def main():
         model1,
         second_surrogate=model2,
         minimize=True,
-        max_eval=100,
+        max_eval=300,
         infill="HVI",
-        n_init_sample=30,
+        n_init_sample=100,
         n_point=1,
         n_job=8,
         optimizer="MIES",
@@ -168,7 +170,7 @@ def main():
         available_gpus=available_gpus,
         ignore_gpu=ignore_gpu,
         bi_objective=True,
-        log_file="./log_file_02_12.txt",
+        log_file="./log_file_09_12_test.txt",
     )
 
     # run

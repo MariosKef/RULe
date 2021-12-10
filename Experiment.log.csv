@@ -11,4 +11,8 @@ Date, Description, Notes, Epochs, Train R2, Train RMSE, Test R2, Test RMSE
 26/11/2021, Training on entire dataset on best configs found from collected results of 25/11/2021, Had issues with this due to infinity,
 26/11/2021, Run MIPEGO on objective on the low_std branch, It runs-no problem,
 29/11/2021, Run MIPEGO on objective_total_var, It runs-no problem,100,
-2/11/2021, Run MIPEGO on normal objective with median instead of mean, It runs-no problem,50 
+2/12/2021, Run MIPEGO on normal objective with median instead of mean (feature/uncertaity_no_cv_low_std) , It runs-no problem,50 
+3/12/2021, Run MIPEGO on new objective, It runs-no problem, 50 epochs (100 max 30 init),
+7/12/2021, Run AutoKeras (greedy/default), Fixed dropout issue (it seems before it was not taking it into account, max trials 100 (stopped at trial 69) epochs 50,
+8/12/2021, Run MIPEGO on normal objective with median instead of mean (feature/uncertaity_no_cv_low_std), Issues with multiple GPUs being used and lot's of time for an evaluation compared to other times. Perhaps the large number of layers is to blame., 100 epochs (300 max 100 init)
+9/12/2021, Run MIPEGO on normal objective with median instead of mean (feature/uncertaity_no_cv_low_std) with [50-100] "neuron" vs [50-200] "neuron" on 8/12/2021, Interrupted as I had a better idea, 100 epochs (300 max 100 init),
