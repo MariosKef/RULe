@@ -55,41 +55,64 @@ def main():
     # objective function
     objective = obj_func("./objective.py")
 
-    # hyperparameter configuration
+    # Hyperparameter configuration
+    # Pre-processing
     max_time = OrdinalSpace([20, 50], "max_time")  # maximum lookback
+    percentage = OrdinalSpace([25, 75], "percentage")
+    rul = OrdinalSpace([110, 130], "rul")
+    rul_style = NominalSpace(["linear", "nonlinear"], "rul_style")
+
+    # General training
     # lr_rate = ContinuousSpace([1e-4, 1.0e-1], "lr")  # learning rate
     lr_rate = NominalSpace(
         ["1e-1", "1e-2", "1e-3", "1e-4", "2e-5", "1e-5"], "lr"
     )  # learning rate
-    num_rec = OrdinalSpace([2, 10], "num_rec")  # maximum number of recurrent layers
+    batch_size = NominalSpace(["32", "64", "128"], "batch")
 
     activations = ["tanh", "sigmoid"]  # activations of recurrent layers
     final_activations = ["softplus", "exp"]  # output activations
-    neurons = OrdinalSpace([50, 100], "neuron") * num_rec._ub[0]  # number of neurons
-    acts = (
-        NominalSpace(activations, "activation") * num_rec._ub[0]
-    )  # activations of recurrent layers
-    dropout = ContinuousSpace([1e-5, 0.9], "dropout") * num_rec._ub[0]  # normal dropout
+
+    # Recurrent layers
+    num_rec = OrdinalSpace([2, 3], "num_rec")  # maximum number of recurrent layers
+    neurons = (
+        OrdinalSpace([10, 100], "neuron") * num_rec._ub[0]
+    )  # number of neurons of RNN layers
+    acts_rec = (
+        NominalSpace(activations, "activation_rec") * num_rec._ub[0]
+    )  # activations of RNN layers
+
+    rec_dropout_norm = (
+        ContinuousSpace([1e-5, 0.9], "rec_dropout_norm") * num_rec._ub[0]
+    )  # normal dropout for RNN
+
     rec_dropout = (
         ContinuousSpace([1e-5, 0.9], "recurrent_dropout") * num_rec._ub[0]
     )  # recurrent dropout
+
+    # Dense layers
+    num_den = OrdinalSpace([2, 3], "num_den")  # maximum number of dense layers
+    neurons_den = (
+        OrdinalSpace([10, 100], "neuron_den") * num_den._ub[0]
+    )  # number of neurons of Dense layers
+    acts_den = (
+        NominalSpace(activations, "activation_den") * num_den._ub[0]
+    )  # activations of recurrent layers
+
+    den_dropout_norm = (
+        ContinuousSpace([1e-5, 0.9], "dropout") * num_den._ub[0]
+    )  # normal dropout
+
     f_acts = (
         NominalSpace(final_activations, "final_activation") * 2
     )  # final activations. The "2" because we have 2
     # outputs
-    percentage = OrdinalSpace([25, 75], "percentage")
-    rul = OrdinalSpace([110, 130], "rul")
-
-    rul_style = NominalSpace(["linear", "nonlinear"], "rul_style")
-
-    batch_size = NominalSpace(["32", "64", "128"], "batch")
 
     search_space = (
         num_rec
         * max_time
         * neurons
-        * acts
-        * dropout
+        * acts_rec
+        * rec_dropout_norm
         * rec_dropout
         * f_acts
         * percentage
@@ -97,6 +120,10 @@ def main():
         * rul_style
         * lr_rate
         * batch_size
+        * num_den
+        * neurons_den
+        * acts_den
+        * den_dropout_norm
     )
 
     # values = search_space.sampling(1)
