@@ -93,7 +93,7 @@ def main():
     )  # recurrent dropout
 
     # Dense layers
-    num_den = OrdinalSpace([2, 3], "num_den")  # maximum number of dense layers
+    num_den = OrdinalSpace([1, 3], "num_den")  # maximum number of dense layers
     neurons_den = (
         OrdinalSpace([10, 100], "neuron_den") * num_den._ub[0]
     )  # number of neurons of Dense layers
