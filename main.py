@@ -1,8 +1,11 @@
 # various
 import os
 
+available_gpus = [3, 4, 5, 6, 7, 8, 9, 10]
+str_available_gpus = [str(gpu) for gpu in available_gpus]
+str_available_gpus = ",".join(str_available_gpus)
 os.environ["CUDA_DEVICE_ORDER"] = "PCI_BUS_ID"
-os.environ["CUDA_VISIBLE_DEVICES"] = "3,4,5,6,7,8,9,10"
+os.environ["CUDA_VISIBLE_DEVICES"] = str_available_gpus
 import subprocess
 from subprocess import STDOUT, check_output
 import re
@@ -174,7 +177,6 @@ def main():
     model1 = RandomForest(levels=search_space.levels)
     model2 = RandomForest(levels=search_space.levels)
 
-    available_gpus = [3, 4, 5, 6, 7, 8, 9, 10]
     ignore_gpu = np.append(
         [0, 1, 2], np.arange(available_gpus[-1] + 1, 21)
     ).tolist()  # before available_gpus[0] is missing
@@ -197,7 +199,7 @@ def main():
         available_gpus=available_gpus,
         ignore_gpu=ignore_gpu,
         bi_objective=True,
-        log_file="./log_file_09_12_test.txt",
+        log_file="./log_file_10_12_test.txt",
     )
 
     # run
