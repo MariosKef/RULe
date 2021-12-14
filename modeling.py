@@ -52,20 +52,18 @@ def network(train_X, train_y, test_X, test_y, net_cfg, cfg):
     )(masking_layer)
 
     # dense layers
+    last = 0
     if net_cfg["num_den"] > 1:
         for i in np.arange(net_cfg["num_den"] - 1):
-            gru_last = keras.layers.Dropout(
-                rate=net_cfg["dropout_" + str(i)],
-            )(gru_last)
             gru_last = keras.layers.Dense(
                 net_cfg["neuron_den_" + str(i)],
                 activation=net_cfg["activation_den_" + str(i)],
             )(gru_last)
+            gru_last = keras.layers.Dropout(
+                rate=net_cfg["dropout_" + str(i)],
+            )(gru_last)
+        last = i + 1
 
-    last = i + 1
-    gru_last = keras.layers.Dropout(
-        rate=net_cfg["dropout_" + str(last)],
-    )(gru_last)
     dense_ = keras.layers.Dense(2)(gru_last)
     custom_activation = Activate(net_cfg=net_cfg)
     outputs = keras.layers.Activation(custom_activation)(dense_)

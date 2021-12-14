@@ -199,7 +199,7 @@ def main():
         available_gpus=available_gpus,
         ignore_gpu=ignore_gpu,
         bi_objective=True,
-        log_file="./log_file_10_12_test.txt",
+        log_file="./log_file_14_12.txt",
     )
 
     # run
