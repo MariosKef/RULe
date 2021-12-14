@@ -1,7 +1,7 @@
 # various
 import os
 
-available_gpus = [3, 4, 5, 6, 7, 8, 9, 10]
+available_gpus = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
 str_available_gpus = [str(gpu) for gpu in available_gpus]
 str_available_gpus = ",".join(str_available_gpus)
 os.environ["CUDA_DEVICE_ORDER"] = "PCI_BUS_ID"
@@ -76,7 +76,7 @@ def main():
     final_activations = ["softplus", "exp"]  # output activations
 
     # Recurrent layers
-    num_rec = OrdinalSpace([2, 3], "num_rec")  # maximum number of recurrent layers
+    num_rec = OrdinalSpace([1, 3], "num_rec")  # maximum number of recurrent layers
     neurons = (
         OrdinalSpace([10, 100], "neuron") * num_rec._ub[0]
     )  # number of neurons of RNN layers
@@ -177,9 +177,11 @@ def main():
     model1 = RandomForest(levels=search_space.levels)
     model2 = RandomForest(levels=search_space.levels)
 
-    ignore_gpu = np.append(
-        [0, 1, 2], np.arange(available_gpus[-1] + 1, 21)
+    ignore_gpu = np.arange(
+        available_gpus[-1] + 1, 20
     ).tolist()  # before available_gpus[0] is missing
+
+    print(ignore_gpu)
 
     # now define the optimizer.
     opt = mipego(
@@ -192,7 +194,7 @@ def main():
         infill="HVI",
         n_init_sample=100,
         n_point=1,
-        n_job=8,
+        n_job=10,
         optimizer="MIES",
         verbose=True,
         random_seed=42,

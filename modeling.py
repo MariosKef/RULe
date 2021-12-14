@@ -33,6 +33,7 @@ def network(train_X, train_y, test_X, test_y, net_cfg, cfg):
     masking_layer = keras.layers.Masking(mask_value=cfg["mask_value"])(inputs)
 
     # recurrent layers
+    last = 0
     if net_cfg["num_rec"] > 1:
         for i in np.arange(net_cfg["num_rec"] - 1):
             masking_layer = keras.layers.GRU(
@@ -42,7 +43,8 @@ def network(train_X, train_y, test_X, test_y, net_cfg, cfg):
                 recurrent_dropout=net_cfg["recurrent_dropout_" + str(i)],
                 return_sequences=True,
             )(masking_layer)
-    last = i + 1
+        last = i + 1
+
     gru_last = keras.layers.GRU(
         net_cfg["neuron_" + str(last)],
         activation=net_cfg["activation_rec_" + str(last)],
