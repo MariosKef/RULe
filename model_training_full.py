@@ -3,7 +3,7 @@ import os
 os.environ["CUDA_DEVICE_ORDER"] = "PCI_BUS_ID"
 os.environ[
     "CUDA_VISIBLE_DEVICES"
-] = "0,1,2,3"  # uncomment in case running ONLY on CPU is required
+] = "10,11,12"  # uncomment in case running ONLY on CPU is required
 
 import tensorflow as tf
 
@@ -42,11 +42,11 @@ def network(train_X, train_y, net_cfg, cfg):
     nan_terminator = callbacks.TerminateOnNaN()
     reduce_lr = callbacks.ReduceLROnPlateau(monitor="loss")
     early_stopping = callbacks.EarlyStopping(monitor="loss", patience=5)
-    checkpoint_filepath = "./saved_models_13_12/cp-{epoch:04d}.ckpt"
+    checkpoint_filepath = "./saved_models_14_12/cp-{epoch:04d}.ckpt"
     checkpoint = callbacks.ModelCheckpoint(
         filepath=checkpoint_filepath, monitor="loss", verbose=1
     )
-    logdir = "logs/test_13_12"  # + datetime.now().strftime("%Y%m%d-%H%M%S")
+    logdir = "logs/test_14_12"  # + datetime.now().strftime("%Y%m%d-%H%M%S")
     tensorboard = callbacks.TensorBoard(log_dir=logdir)
 
     window = train_X.shape[1]
@@ -58,6 +58,7 @@ def network(train_X, train_y, net_cfg, cfg):
         masking_layer = keras.layers.Masking(mask_value=cfg["mask_value"])(inputs)
 
         # recurrent layers
+        last = 0
         if net_cfg["num_rec"] > 1:
             for i in np.arange(net_cfg["num_rec"] - 1):
                 masking_layer = keras.layers.GRU(
@@ -67,7 +68,8 @@ def network(train_X, train_y, net_cfg, cfg):
                     recurrent_dropout=net_cfg["recurrent_dropout_" + str(i)],
                     return_sequences=True,
                 )(masking_layer)
-        last = i + 1
+            last = i + 1
+
         gru_last = keras.layers.GRU(
             net_cfg["neuron_" + str(last)],
             activation=net_cfg["activation_rec_" + str(last)],
@@ -77,20 +79,18 @@ def network(train_X, train_y, net_cfg, cfg):
         )(masking_layer)
 
         # dense layers
+        last = 0
         if net_cfg["num_den"] > 1:
             for i in np.arange(net_cfg["num_den"] - 1):
-                gru_last = keras.layers.Dropout(
-                    rate=net_cfg["dropout_" + str(i)],
-                )(gru_last)
                 gru_last = keras.layers.Dense(
                     net_cfg["neuron_den_" + str(i)],
                     activation=net_cfg["activation_den_" + str(i)],
                 )(gru_last)
+                gru_last = keras.layers.Dropout(
+                    rate=net_cfg["dropout_" + str(i)],
+                )(gru_last)
+            last = i + 1
 
-        last = i + 1
-        gru_last = keras.layers.Dropout(
-            rate=net_cfg["dropout_" + str(last)],
-        )(gru_last)
         dense_ = keras.layers.Dense(2)(gru_last)
         custom_activation = Activate(net_cfg=net_cfg)
         outputs = keras.layers.Activation(custom_activation)(dense_)
@@ -214,37 +214,37 @@ if __name__ == "__main__":
     epochs = sys.argv[1]
 
     net_cfg = {
-        "num_rec": 2,
-        "max_time": 39,
-        "neuron_0": 68,
-        "neuron_1": 52,
-        "neuron_2": 78,
+        "num_rec": 1,
+        "max_time": 20,
+        "neuron_0": 53,
+        "neuron_1": 63,
+        "neuron_2": 72,
         "activation_rec_0": "sigmoid",
         "activation_rec_1": "sigmoid",
-        "activation_rec_2": "tanh",
-        "rec_dropout_norm_0": 0.15901070678238774,
-        "rec_dropout_norm_1": 0.1276408523475518,
-        "rec_dropout_norm_2": 0.41425893397770813,
-        "recurrent_dropout_0": 0.3940639925035119,
-        "recurrent_dropout_1": 0.30701917318720195,
-        "recurrent_dropout_2": 0.8999980912152966,
-        "final_activation_0": "softplus",
+        "activation_rec_2": "sigmoid",
+        "rec_dropout_norm_0": 0.17306819403761564,
+        "rec_dropout_norm_1": 0.03679134595366832,
+        "rec_dropout_norm_2": 0.1520498674143174,
+        "recurrent_dropout_0": 0.011711601140427325,
+        "recurrent_dropout_1": 0.07696682268371273,
+        "recurrent_dropout_2": 0.18710555076887314,
+        "final_activation_0": "exp",
         "final_activation_1": "softplus",
-        "percentage": 66,
-        "rul": 118,
+        "percentage": 47,
+        "rul": 121,
         "rul_style": "nonlinear",
         "lr": "1e-3",
-        "batch": "32",
-        "num_den": 2,
-        "neuron_den_0": 91,
-        "neuron_den_1": 24,
-        "neuron_den_2": 24,
-        "activation_den_0": "sigmoid",
-        "activation_den_1": "tanh",
-        "activation_den_2": "sigmoid",
-        "dropout_0": 0.2899109370612365,
-        "dropout_1": 0.13543996179785042,
-        "dropout_2": 0.2913528125378241,
+        "batch": "64",
+        "num_den": 1,
+        "neuron_den_0": 57,
+        "neuron_den_1": 31,
+        "neuron_den_2": 92,
+        "activation_den_0": "tanh",
+        "activation_den_1": "sigmoid",
+        "activation_den_2": "tanh",
+        "dropout_0": 0.3541091274287668,
+        "dropout_1": 0.7450832591062023,
+        "dropout_2": 0.7089438368447826,
     }
     # net_cfg = {
     #     "num_rec": 3,
