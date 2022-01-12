@@ -1,7 +1,7 @@
 # various
 import os
 
-available_gpus = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+available_gpus = [0]
 str_available_gpus = [str(gpu) for gpu in available_gpus]
 str_available_gpus = ",".join(str_available_gpus)
 os.environ["CUDA_DEVICE_ORDER"] = "PCI_BUS_ID"
@@ -15,9 +15,9 @@ import time
 
 
 # Mipego
-from mipego import mipego
-from mipego.Surrogate import RandomForest
-from mipego.SearchSpace import ContinuousSpace, NominalSpace, OrdinalSpace
+from mipego_multi import mipego
+from mipego_multi.Surrogate import RandomForest
+from mipego_multi.SearchSpace import ContinuousSpace, NominalSpace, OrdinalSpace
 
 from objective import obj_function
 
@@ -179,7 +179,7 @@ def main():
 
     ignore_gpu = np.arange(
         available_gpus[-1] + 1, 20
-    ).tolist()  # before available_gpus[0] is missing
+    ).tolist()  # before available_gpus[0] is missing [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 12]
 
     print(ignore_gpu)
 
@@ -194,14 +194,14 @@ def main():
         infill="HVI",
         n_init_sample=100,
         n_point=1,
-        n_job=10,
+        n_job=1,
         optimizer="MIES",
         verbose=True,
         random_seed=42,
         available_gpus=available_gpus,
         ignore_gpu=ignore_gpu,
         bi_objective=True,
-        log_file="./log_file_14_12.txt",
+        log_file=None,
     )
 
     # run

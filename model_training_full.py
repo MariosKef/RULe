@@ -42,11 +42,13 @@ def network(train_X, train_y, net_cfg, cfg):
     nan_terminator = callbacks.TerminateOnNaN()
     reduce_lr = callbacks.ReduceLROnPlateau(monitor="loss")
     early_stopping = callbacks.EarlyStopping(monitor="loss", patience=5)
-    checkpoint_filepath = "./saved_models_17_12_2/cp-{epoch:04d}.ckpt"
+    checkpoint_filepath = (
+        "./Final_experiments/dataset_3/57/saved_models_5_1/cp-{epoch:04d}.ckpt"
+    )
     checkpoint = callbacks.ModelCheckpoint(
         filepath=checkpoint_filepath, monitor="loss", verbose=1
     )
-    logdir = "logs/test_17_12_2"  # + datetime.now().strftime("%Y%m%d-%H%M%S")
+    logdir = "Final_experiments/dataset_3/57/logs"  # + datetime.now().strftime("%Y%m%d-%H%M%S")
     tensorboard = callbacks.TensorBoard(log_dir=logdir)
 
     window = train_X.shape[1]
@@ -137,17 +139,17 @@ def load_data():
     column_names = [id_col, time_col] + feature_cols
 
     train_x_orig = pd.read_csv(
-        "./DataSets/CMAPSS/train_FD001.csv", header=None, sep="\s+", decimal="."
+        "./DataSets/CMAPSS/train_FD003.csv", header=None, sep="\s+", decimal="."
     )
     train_x_orig.columns = column_names
 
     test_x_orig = pd.read_csv(
-        "./DataSets/CMAPSS/test_FD001.csv", header=None, sep="\s+", decimal="."
+        "./DataSets/CMAPSS/test_FD003.csv", header=None, sep="\s+", decimal="."
     )
     test_x_orig.columns = column_names
 
     test_y_orig = pd.read_csv(
-        "./DataSets/CMAPSS/RUL_FD001.csv", header=None, names=["T"]
+        "./DataSets/CMAPSS/RUL_FD003.csv", header=None, names=["T"]
     )
 
     # Make engine numbers and days zero-indexed
@@ -206,6 +208,8 @@ def main(net_cfg, cfg):
     k.clear_session()
 
     train_x, train_y, _, _, _ = load_data()
+    print(train_x.shape)
+    print(train_y.shape)
 
     _, _ = network(train_x, train_y, net_cfg, cfg)
 
@@ -213,71 +217,38 @@ def main(net_cfg, cfg):
 if __name__ == "__main__":
     epochs = sys.argv[1]
 
-    # net_cfg = {
-    #     "num_rec": 1,
-    #     "max_time": 20,
-    #     "neuron_0": 53,
-    #     "neuron_1": 63,
-    #     "neuron_2": 72,
-    #     "activation_rec_0": "sigmoid",
-    #     "activation_rec_1": "sigmoid",
-    #     "activation_rec_2": "sigmoid",
-    #     "rec_dropout_norm_0": 0.17306819403761564,
-    #     "rec_dropout_norm_1": 0.03679134595366832,
-    #     "rec_dropout_norm_2": 0.1520498674143174,
-    #     "recurrent_dropout_0": 0.011711601140427325,
-    #     "recurrent_dropout_1": 0.07696682268371273,
-    #     "recurrent_dropout_2": 0.18710555076887314,
-    #     "final_activation_0": "exp",
-    #     "final_activation_1": "softplus",
-    #     "percentage": 47,
-    #     "rul": 121,
-    #     "rul_style": "nonlinear",
-    #     "lr": "1e-3",
-    #     "batch": "64",
-    #     "num_den": 1,
-    #     "neuron_den_0": 57,
-    #     "neuron_den_1": 31,
-    #     "neuron_den_2": 92,
-    #     "activation_den_0": "tanh",
-    #     "activation_den_1": "sigmoid",
-    #     "activation_den_2": "tanh",
-    #     "dropout_0": 0.3541091274287668,
-    #     "dropout_1": 0.7450832591062023,
-    #     "dropout_2": 0.7089438368447826,
-    # }
     net_cfg = {
         "num_rec": 2,
-        "max_time": 30,
-        "neuron_0": 84,
-        "neuron_1": 38,
-        "neuron_2": 52,
+        "max_time": 26,
+        "neuron_0": 71,
+        "neuron_1": 27,
+        "neuron_2": 75,
         "activation_rec_0": "sigmoid",
         "activation_rec_1": "tanh",
         "activation_rec_2": "tanh",
-        "rec_dropout_norm_0": 0.24029640530008275,
-        "rec_dropout_norm_1": 0.47268487647610613,
-        "rec_dropout_norm_2": 0.29820352354933377,
-        "recurrent_dropout_0": 0.012285165175023748,
-        "recurrent_dropout_1": 0.3293396516199814,
-        "recurrent_dropout_2": 0.2121952809065241,
-        "final_activation_0": "softplus",
+        "rec_dropout_norm_0": 0.13672090513412982,
+        "rec_dropout_norm_1": 0.12495306711274264,
+        "rec_dropout_norm_2": 0.5767908615754451,
+        "recurrent_dropout_0": 0.2188625401775987,
+        "recurrent_dropout_1": 0.6500430160007746,
+        "recurrent_dropout_2": 0.7701282643309761,
+        "final_activation_0": "exp",
         "final_activation_1": "softplus",
-        "percentage": 62,
-        "rul": 113,
-        "rul_style": "nonlinear",
-        "lr": "1e-4",
-        "batch": "64",
-        "num_den": 2,
-        "neuron_den_0": 71,
-        "neuron_den_1": 27,
-        "neuron_den_2": 68,
+        "percentage": 39,
+        "rul": 128,
+        "rul_style": "linear",
+        "lr": "1e-1",
+        "batch": "32",
+        "num_den": 1,
+        "neuron_den_0": 30,
+        "neuron_den_1": 30,
+        "neuron_den_2": 11,
         "activation_den_0": "sigmoid",
-        "activation_den_1": "sigmoid",
+        "activation_den_1": "tanh",
         "activation_den_2": "sigmoid",
-        "dropout_0": 0.18207609281622392,
-        "dropout_1": 0.5925208723880789,
-        "dropout_2": 0.5323343040227004,
+        "dropout_0": 0.3113349435470498,
+        "dropout_1": 0.2836774170924121,
+        "dropout_2": 0.6946742349861974,
     }
     cfg = {
         "cv": 10,

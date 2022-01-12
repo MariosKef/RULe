@@ -17,3 +17,11 @@ my_model*
 preliminary_experiments
 saved_models_*
 logs
+events.*
+neocortex.*
+Results
+log*
+ho_no*
+*.pdf
+*.pb
+variables.*

@@ -6,29 +6,44 @@ def load_data():
 
     np.random.seed(42)
 
-    id_col = 'unit_number'
-    time_col = 'time'
-    feature_cols = ['op_setting_1', 'op_setting_2', 'op_setting_3'] + ['sensor_measurement_{}'.format(x) for x in
-                                                                       range(1, 22)]
+    id_col = "unit_number"
+    time_col = "time"
+    feature_cols = ["op_setting_1", "op_setting_2", "op_setting_3"] + [
+        "sensor_measurement_{}".format(x) for x in range(1, 22)
+    ]
     column_names = [id_col, time_col] + feature_cols
 
-    train_x_orig = pd.read_csv('./DataSets/CMAPSS/train_FD001.csv', header=None, sep='\s+', decimal=".")
+    train_x_orig = pd.read_csv(
+        "./DataSets/CMAPSS/train_FD003.csv", header=None, sep="\s+", decimal="."
+    )
     train_x_orig.columns = column_names
 
-    test_x_orig = pd.read_csv('./DataSets/CMAPSS/test_FD001.csv', header=None, sep='\s+', decimal=".")
+    test_x_orig = pd.read_csv(
+        "./DataSets/CMAPSS/test_FD003.csv", header=None, sep="\s+", decimal="."
+    )
     test_x_orig.columns = column_names
 
-    test_y_orig = pd.read_csv('./DataSets/CMAPSS/RUL_FD001.csv', header=None, names=['T'])
+    test_y_orig = pd.read_csv(
+        "./DataSets/CMAPSS/RUL_FD003.csv", header=None, names=["T"]
+    )
 
     # Make engine numbers and days zero-indexed
     train_x_orig.iloc[:, 0:2] -= 1
     test_x_orig.iloc[:, 0:2] -= 1
 
-    train_idx = np.random.choice(range(train_x_orig.unit_number.unique().max()+1), replace=False, size=80)  # selecting 80 units for training
+    train_idx = np.random.choice(
+        range(train_x_orig.unit_number.unique().max() + 1), replace=False, size=80
+    )  # selecting 80 units for training
     train_idx.sort()
 
     # print(train_idx)
-    vld_idx = np.array([x for x in range(train_x_orig.unit_number.unique().max()+1) if x not in train_idx])  # remaining are validation indices
+    vld_idx = np.array(
+        [
+            x
+            for x in range(train_x_orig.unit_number.unique().max() + 1)
+            if x not in train_idx
+        ]
+    )  # remaining are validation indices
     # print(vld_idx)
 
     train = train_x_orig[train_x_orig.unit_number.isin(train_idx)]  # training data
@@ -48,9 +63,9 @@ def load_data():
 
     for i in set(vld.unit_number.unique()):
         # print(f'unit number is {i}')
-        for j in range(1,6):  # 5 truncations per instance
+        for j in range(1, 6):  # 5 truncations per instance
             counter += 1
-            np.random.seed(i*j)
+            np.random.seed(i * j)
             temp_df = vld[vld.unit_number == i]
             temp_df.reset_index(drop=True, inplace=True)  # important
             length = temp_df.shape[0]
@@ -63,10 +78,9 @@ def load_data():
             temp_df = temp_df.truncate(after=r)
             # print(temp_df.shape[0])
             # print('\n')
-            temp_df['unit_number'] = np.repeat(counter, temp_df.shape[0])
+            temp_df["unit_number"] = np.repeat(counter, temp_df.shape[0])
             vld_trunc.append(temp_df)
             max_cycle.append(length)
-
 
     # test_index = [item for sublist in test_index for item in sublist]
 
@@ -74,4 +88,12 @@ def load_data():
     vld_trunc.reset_index(drop=True, inplace=True)
     # print(f'max len per unit is {max_cycle}')
 
-    return train, feature_cols, vld_trunc, vld, np.array(max_cycle), test_x_orig, test_y_orig
+    return (
+        train,
+        feature_cols,
+        vld_trunc,
+        vld,
+        np.array(max_cycle),
+        test_x_orig,
+        test_y_orig,
+    )
