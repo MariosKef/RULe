@@ -1,7 +1,7 @@
 # various
 import os
 
-available_gpus = [0]
+available_gpus = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
 str_available_gpus = [str(gpu) for gpu in available_gpus]
 str_available_gpus = ",".join(str_available_gpus)
 os.environ["CUDA_DEVICE_ORDER"] = "PCI_BUS_ID"
@@ -15,9 +15,9 @@ import time
 
 
 # Mipego
-from mipego_multi import mipego
-from mipego_multi.Surrogate import RandomForest
-from mipego_multi.SearchSpace import ContinuousSpace, NominalSpace, OrdinalSpace
+from mipego import ParallelBO, BO
+from mipego.Surrogate import RandomForest
+from mipego.SearchSpace import ContinuousSpace, NominalSpace, OrdinalSpace
 
 from objective import obj_function
 
@@ -28,20 +28,20 @@ class obj_func(object):
     def __init__(self, program):
         self.program = program
 
-    def __call__(self, cfg, gpu_no):
-        print("calling program with gpu " + str(gpu_no))
-        cmd = ["python3", self.program, "--cfg", str(cfg), str(gpu_no)]
+    def __call__(self, cfg):
+        # print("calling program with gpu " + str(gpu_no))
+        cmd = ["python3", self.program, "--cfg", str(cfg)]
         outs = ""
-        outputval = [1e4, 1e4, False]
+        outputval = 1e4
         try:
             # we use a timeout to cancel very long evaluations.
             outs = str(check_output(cmd, stderr=STDOUT, timeout=40000, encoding="utf8"))
             outs = eval(outs.split("\n")[-2])
 
-            outputval = [float(outs[0]), float(outs[1]), bool(outs[2])]
+            outputval = float(outs[0])
 
             if np.isnan(outputval).any():
-                outputval = [1e4, 1e4, False]
+                outputval = 1e4
         except subprocess.CalledProcessError as e:
             # exception handling
             traceback.print_exc()
@@ -49,14 +49,14 @@ class obj_func(object):
         except:
             print("Unexpected error:")
             traceback.print_exc()
-            outputval = [1e4, 1e4, False]
+            outputval = 1e4
         return outputval
 
 
 def main():
 
     # objective function
-    objective = obj_func("./objective.py")
+    objective = obj_func("objective.py")
 
     # Hyperparameter configuration
     # Pre-processing
@@ -112,21 +112,21 @@ def main():
 
     search_space = (
         num_rec
-        * max_time
-        * neurons
-        * acts_rec
-        * rec_dropout_norm
-        * rec_dropout
-        * f_acts
-        * percentage
-        * rul
-        * rul_style
-        * lr_rate
-        * batch_size
-        * num_den
-        * neurons_den
-        * acts_den
-        * den_dropout_norm
+        + max_time
+        + neurons
+        + acts_rec
+        + rec_dropout_norm
+        + rec_dropout
+        + f_acts
+        + percentage
+        + rul
+        + rul_style
+        + lr_rate
+        + batch_size
+        + num_den
+        + neurons_den
+        + acts_den
+        + den_dropout_norm
     )
 
     # values = search_space.sampling(1)
@@ -175,38 +175,28 @@ def main():
     # print(search_space.levels)
 
     model1 = RandomForest(levels=search_space.levels)
-    model2 = RandomForest(levels=search_space.levels)
-
-    ignore_gpu = np.arange(
-        available_gpus[-1] + 1, 20
-    ).tolist()  # before available_gpus[0] is missing [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 12]
-
-    print(ignore_gpu)
+    # model2 = RandomForest(levels=search_space.levels)
 
     # now define the optimizer.
-    opt = mipego(
-        search_space,
-        objective,
-        model1,
-        second_surrogate=model2,
+    opt = ParallelBO(
+        search_space=search_space,
+        obj_fun=objective,
+        model=model1,
         minimize=True,
-        max_eval=300,
-        infill="HVI",
-        n_init_sample=100,
-        n_point=1,
-        n_job=1,
-        optimizer="MIES",
+        max_FEs=10,
+        acquisition_fun="MGFI",
+        DoE_size=5,
+        n_point=2,
+        n_job=2,
         verbose=True,
         random_seed=42,
-        available_gpus=available_gpus,
-        ignore_gpu=ignore_gpu,
-        bi_objective=True,
-        log_file=None,
+        logger="log_file_single_objective_dataset_1_12_1.txt",
+        eval_type="dict",
     )
 
     # run
-    opt.run()
-    # incumbent, stop_dict = opt.run()
+    # opt.run()
+    xopt, fopt, stop_dict = opt.run()
     # print(incumbent)
 
     # net_cfg = {
@@ -237,27 +227,8 @@ def main():
     #     "batch": "128",
     # }
     # print(net_cfg)
-    # (
-    #     model,
-    #     train_results_df,
-    #     test_results_df,
-    #     test_x_orig,
-    #     test_y_orig,
-    #     scaler,
-    #     train_x,
-    #     test_x,
-    # ) = obj_function(net_cfg, cfg=None)
 
-    # return (
-    #     model,
-    #     train_results_df,
-    #     test_results_df,
-    #     test_x_orig,
-    #     test_y_orig,
-    #     scaler,
-    #     train_x,
-    #     test_x,
-    # )
+    return xopt, fopt, stop_dict
 
 
 if __name__ == "__main__":
@@ -271,8 +242,9 @@ if __name__ == "__main__":
 
     # incumbent = main()
     start = time.time()
-    main()
+    xopt, fopt, stop_dict = main()
+    print("xopt: {}".format(xopt))
+    print("fopt: {}".format(fopt))
+    print("stop criteria: {}".format(stop_dict))
     end = time.time()
     print(f"Elapsed time: {(end-start)/60} minutes")
-    # rmse, std =  obj_function(net_cfg, cfg)
-    # print(incumbent)

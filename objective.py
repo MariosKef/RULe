@@ -29,6 +29,7 @@ from tensorflow.keras import backend as k
 from data import load_data
 from modeling import network
 from preprocessing import build_data
+import GPUtil as gp
 
 
 def weibull_mean(alpha, beta):
@@ -82,7 +83,7 @@ def obj_function(net_cfg, cfg=None):
     train_all = []
     test_all = []
 
-    file = "results_no_cv_HO_26_12"
+    file = "results_single_obj_dataset_1_12_1"
     columns = [
         "rmse_train",
         "mae_train",
@@ -317,7 +318,7 @@ def obj_function(net_cfg, cfg=None):
 
     if success == False:
         print("Failed")
-        return 1e4, 1e4, False  # not successful
+        return 1e4  # not successful
 
     # registering results
     results["rmse_train"] = rmse_train
@@ -348,12 +349,10 @@ def obj_function(net_cfg, cfg=None):
     else:
         results.to_csv("./" + file, mode="w", index=False, header=True)
 
-    if np.isfinite(results["rmse_test"].mean()) and np.isfinite(
-        results["uncertainty_test"].mean()
-    ):
-        return results["rmse_test"].mean(), results["uncertainty_test"].mean(), True
+    if np.isfinite(results["rmse_test"].mean()):
+        return results["rmse_test"].mean()
     else:
-        return 1e4, 1e4, False  # not successful
+        return 1e4
     # end = time.time()
     # print(f'Elapsed time: {(end - start) / 60} minutes')
 
@@ -363,11 +362,15 @@ if len(sys.argv) > 2 and sys.argv[1] == "--cfg":
     cfg = eval(sys.argv[2])
     if len(sys.argv) > 3:
         gpu = sys.argv[3]
+    else:
+        available_gpus = gp.getAvailable(limit=10)
+        gpu = available_gpus[0]
 
-        os.environ["CUDA_DEVICE_ORDER"] = "PCI_BUS_ID"  # see issue #152
-        os.environ["CUDA_VISIBLE_DEVICES"] = str(gpu)
-        physical_devices = tf.config.list_physical_devices("GPU")
-        for device in physical_devices:
-            tf.config.experimental.set_memory_growth(device, True)
+    os.environ["CUDA_DEVICE_ORDER"] = "PCI_BUS_ID"  # see issue #152
+    os.environ["CUDA_VISIBLE_DEVICES"] = str(gpu)
+
+    physical_devices = tf.config.list_physical_devices("GPU")
+    for device in physical_devices:
+        tf.config.experimental.set_memory_growth(device, True)
     print(obj_function(cfg, None))
     k.clear_session()
