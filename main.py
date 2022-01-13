@@ -20,8 +20,11 @@ from mipego.Surrogate import RandomForest
 from mipego.SearchSpace import ContinuousSpace, NominalSpace, OrdinalSpace
 
 from objective import obj_function
+import GPUtil as gp
 
 # from objective_total_var import obj_function
+
+reserved_gpus = []
 
 
 class obj_func(object):
@@ -29,16 +32,27 @@ class obj_func(object):
         self.program = program
 
     def __call__(self, cfg):
+        global reserved_gpus
+        # print(f" Reserved GPUs: {reserved_gpus}")
+        available_gpus = gp.getAvailable(limit=10, excludeID=reserved_gpus)
+        # print(f"available gpus {available_gpus}")
+        gpu = np.random.choice(available_gpus, replace=False)
+        reserved_gpus.append(gpu)
+        # print(f" Reserved GPUs after appending: {reserved_gpus}")
+        # print(f"gpu:{gpu}")
         # print("calling program with gpu " + str(gpu_no))
-        cmd = ["python3", self.program, "--cfg", str(cfg)]
+        cmd = ["python3", self.program, "--cfg", str(cfg), str(gpu)]
         outs = ""
         outputval = 1e4
         try:
             # we use a timeout to cancel very long evaluations.
             outs = str(check_output(cmd, stderr=STDOUT, timeout=40000, encoding="utf8"))
+            # print(f"outs: {outs}")
             outs = eval(outs.split("\n")[-2])
+            # print(f"outs after splitting: {outs}")
 
-            outputval = float(outs[0])
+            outputval = float(outs)
+            # print(f"outputval: {outputval}")
 
             if np.isnan(outputval).any():
                 outputval = 1e4
@@ -50,6 +64,10 @@ class obj_func(object):
             print("Unexpected error:")
             traceback.print_exc()
             outputval = 1e4
+        # print(f" Reserved GPUs after execution: {reserved_gpus}")
+        # print("\n")
+        # reserved_gpus.remove(gpu)
+        # print(f" Unreserved GPUs: {reserved_gpus}")
         return outputval
 
 
@@ -186,8 +204,8 @@ def main():
         max_FEs=10,
         acquisition_fun="MGFI",
         DoE_size=5,
-        n_point=2,
-        n_job=2,
+        n_point=5,
+        n_job=5,
         verbose=True,
         random_seed=42,
         logger="log_file_single_objective_dataset_1_12_1.txt",
@@ -241,6 +259,7 @@ if __name__ == "__main__":
     #    'batches': 64}
 
     # incumbent = main()
+
     start = time.time()
     xopt, fopt, stop_dict = main()
     print("xopt: {}".format(xopt))

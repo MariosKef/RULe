@@ -48,7 +48,7 @@ def obj_function(net_cfg, cfg=None):
             "random_state": 21,
             "mask_value": -99,
             "reps": 30,
-            "epochs": 100,
+            "epochs": 10,
             "batches": 64,
         }
 
@@ -362,13 +362,14 @@ if len(sys.argv) > 2 and sys.argv[1] == "--cfg":
     cfg = eval(sys.argv[2])
     if len(sys.argv) > 3:
         gpu = sys.argv[3]
-    else:
-        available_gpus = gp.getAvailable(limit=10)
-        gpu = available_gpus[0]
+    # else:
+    #     available_gpus = gp.getAvailable(limit=10)
+    #     gpu = available_gpus[0]
 
     os.environ["CUDA_DEVICE_ORDER"] = "PCI_BUS_ID"  # see issue #152
     os.environ["CUDA_VISIBLE_DEVICES"] = str(gpu)
 
+    print(f"GPU: {gpu} on cfg:{cfg}")
     physical_devices = tf.config.list_physical_devices("GPU")
     for device in physical_devices:
         tf.config.experimental.set_memory_growth(device, True)
