@@ -1,8 +1,8 @@
 # various
 import os
 
-available_gpus = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
-str_available_gpus = [str(gpu) for gpu in available_gpus]
+gpus = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+str_available_gpus = [str(gpu) for gpu in gpus]
 str_available_gpus = ",".join(str_available_gpus)
 os.environ["CUDA_DEVICE_ORDER"] = "PCI_BUS_ID"
 os.environ["CUDA_VISIBLE_DEVICES"] = str_available_gpus
@@ -24,7 +24,7 @@ import GPUtil as gp
 
 # from objective_total_var import obj_function
 
-reserved_gpus = []
+reserved_gpus = list(np.arange(gpus[-1] + 1, 20))
 
 
 class obj_func(object):
@@ -33,26 +33,24 @@ class obj_func(object):
 
     def __call__(self, cfg):
         global reserved_gpus
-        # print(f" Reserved GPUs: {reserved_gpus}")
+        print(f" Reserved GPUs: {reserved_gpus}")
         available_gpus = gp.getAvailable(limit=10, excludeID=reserved_gpus)
-        # print(f"available gpus {available_gpus}")
+        print(f"available gpus {available_gpus}")
         gpu = np.random.choice(available_gpus, replace=False)
+        print(f" selected gpu:{gpu}")
         reserved_gpus.append(gpu)
-        # print(f" Reserved GPUs after appending: {reserved_gpus}")
-        # print(f"gpu:{gpu}")
-        # print("calling program with gpu " + str(gpu_no))
         cmd = ["python3", self.program, "--cfg", str(cfg), str(gpu)]
         outs = ""
         outputval = 1e4
         try:
             # we use a timeout to cancel very long evaluations.
             outs = str(check_output(cmd, stderr=STDOUT, timeout=40000, encoding="utf8"))
-            # print(f"outs: {outs}")
+            print(f"outs: {outs}")
             outs = eval(outs.split("\n")[-2])
-            # print(f"outs after splitting: {outs}")
+            print(f"outs after splitting: {outs}")
 
             outputval = float(outs)
-            # print(f"outputval: {outputval}")
+            print(f"outputval: {outputval}")
 
             if np.isnan(outputval).any():
                 outputval = 1e4
@@ -66,8 +64,9 @@ class obj_func(object):
             outputval = 1e4
         # print(f" Reserved GPUs after execution: {reserved_gpus}")
         # print("\n")
-        # reserved_gpus.remove(gpu)
+        reserved_gpus.remove(gpu)
         # print(f" Unreserved GPUs: {reserved_gpus}")
+        print("\n")
         return outputval
 
 
@@ -201,11 +200,11 @@ def main():
         obj_fun=objective,
         model=model1,
         minimize=True,
-        max_FEs=10,
+        max_FEs=300,
         acquisition_fun="MGFI",
-        DoE_size=5,
-        n_point=5,
-        n_job=5,
+        DoE_size=100,
+        n_point=10,
+        n_job=10,
         verbose=True,
         random_seed=42,
         logger="log_file_single_objective_dataset_1_12_1.txt",

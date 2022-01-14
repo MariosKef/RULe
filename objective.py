@@ -48,7 +48,7 @@ def obj_function(net_cfg, cfg=None):
             "random_state": 21,
             "mask_value": -99,
             "reps": 30,
-            "epochs": 10,
+            "epochs": 100,
             "batches": 64,
         }
 
