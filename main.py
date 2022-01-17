@@ -207,7 +207,7 @@ def main():
         n_job=10,
         verbose=True,
         random_seed=42,
-        logger="log_file_single_objective_dataset_1_12_1.txt",
+        logger="log_file_single_objective_dataset_3_16_1.txt",
         eval_type="dict",
     )
 
