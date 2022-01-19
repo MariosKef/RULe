@@ -178,13 +178,13 @@ def obj_function(net_cfg, cfg=None):
                 train_predict[:, 1].reshape(train_predict[:, 1].shape[0], 1)
             )
 
-        train_predict_1_mean = np.median(np.hstack(train_predict_1), axis=1)
-        train_predict_2_mean = np.median(np.hstack(train_predict_2), axis=1)
-        train_predict_1_mean = train_predict_1_mean.reshape(
-            train_predict_1_mean.shape[0], 1
+        train_predict_1_median = np.median(np.hstack(train_predict_1), axis=1)
+        train_predict_2_median = np.median(np.hstack(train_predict_2), axis=1)
+        train_predict_1_median = train_predict_1_median.reshape(
+            train_predict_1_median.shape[0], 1
         )
-        train_predict_2_mean = train_predict_2_mean.reshape(
-            train_predict_2_mean.shape[0], 1
+        train_predict_2_median = train_predict_2_median.reshape(
+            train_predict_2_median.shape[0], 1
         )
         train_predict_1_std = np.std(np.hstack(train_predict_1), axis=1)
         train_predict_2_std = np.std(np.hstack(train_predict_2), axis=1)
@@ -197,8 +197,8 @@ def obj_function(net_cfg, cfg=None):
 
         train_predict = np.hstack(
             [
-                train_predict_1_mean,
-                train_predict_2_mean,
+                train_predict_1_median,
+                train_predict_2_median,
                 train_predict_1_std,
                 train_predict_2_std,
             ]
@@ -208,13 +208,13 @@ def obj_function(net_cfg, cfg=None):
         train_result = np.concatenate((train_y, train_predict), axis=1)
         train_results_df = pd.DataFrame(
             train_result,
-            columns=["T", "mean_alpha", "mean_beta", "std_alpha", "std_beta"],
+            columns=["T", "meadian_alpha", "median_beta", "std_alpha", "std_beta"],
         )
         train_results_df["unit_number"] = train_x_orig["unit_number"].to_numpy()
         train_results_df["time"] = train_x_orig["time"].to_numpy()
 
         train_results_df["predicted_mu"] = train_results_df[
-            ["mean_alpha", "mean_beta"]
+            ["median_alpha", "median_beta"]
         ].apply(lambda row: weibull_mean(row[0], row[1]), axis=1)
         train_results_df["uncertainty"] = np.mean(train_predict[:, 2:], axis=1)
 
@@ -233,13 +233,13 @@ def obj_function(net_cfg, cfg=None):
                 test_predict[:, 1].reshape(test_predict[:, 1].shape[0], 1)
             )
 
-        test_predict_1_mean = np.median(np.hstack(test_predict_1), axis=1)
-        test_predict_2_mean = np.median(np.hstack(test_predict_2), axis=1)
-        test_predict_1_mean = test_predict_1_mean.reshape(
-            test_predict_1_mean.shape[0], 1
+        test_predict_1_median = np.median(np.hstack(test_predict_1), axis=1)
+        test_predict_2_median = np.median(np.hstack(test_predict_2), axis=1)
+        test_predict_1_median = test_predict_1_median.reshape(
+            test_predict_1_median.shape[0], 1
         )
-        test_predict_2_mean = test_predict_2_mean.reshape(
-            test_predict_2_mean.shape[0], 1
+        test_predict_2_median = test_predict_2_median.reshape(
+            test_predict_2_median.shape[0], 1
         )
         test_predict_1_std = np.std(np.hstack(test_predict_1), axis=1)
         test_predict_2_std = np.std(np.hstack(test_predict_2), axis=1)
@@ -248,8 +248,8 @@ def obj_function(net_cfg, cfg=None):
 
         test_predict = np.hstack(
             [
-                test_predict_1_mean,
-                test_predict_2_mean,
+                test_predict_1_median,
+                test_predict_2_median,
                 test_predict_1_std,
                 test_predict_2_std,
             ]
@@ -261,11 +261,11 @@ def obj_function(net_cfg, cfg=None):
         test_result = np.concatenate((test_y, test_predict), axis=1)
         test_results_df = pd.DataFrame(
             test_result,
-            columns=["T", "mean_alpha", "mean_beta", "std_alpha", "std_beta"],
+            columns=["T", "median_alpha", "median_beta", "std_alpha", "std_beta"],
         )
 
         test_results_df["predicted_mu"] = test_results_df[
-            ["mean_alpha", "mean_beta"]
+            ["median_alpha", "median_beta"]
         ].apply(lambda row: weibull_mean(row[0], row[1]), axis=1)
         test_results_df["uncertainty"] = np.mean(test_predict[:, 2:], axis=1)
 
