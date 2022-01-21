@@ -43,12 +43,12 @@ def network(train_X, train_y, net_cfg, cfg):
     reduce_lr = callbacks.ReduceLROnPlateau(monitor="loss")
     early_stopping = callbacks.EarlyStopping(monitor="loss", patience=5)
     checkpoint_filepath = (
-        "./Final_experiments/dataset_1/SO/saved_models_14_1/cp-{epoch:04d}.ckpt"
+        "./Final_experiments/dataset_3/SO/saved_models_16_1/cp-{epoch:04d}.ckpt"
     )
     checkpoint = callbacks.ModelCheckpoint(
         filepath=checkpoint_filepath, monitor="loss", verbose=1
     )
-    logdir = "Final_experiments/dataset_1/SO/logs"  # + datetime.now().strftime("%Y%m%d-%H%M%S")
+    logdir = "Final_experiments/dataset_3/SO/logs"  # + datetime.now().strftime("%Y%m%d-%H%M%S")
     tensorboard = callbacks.TensorBoard(log_dir=logdir)
 
     window = train_X.shape[1]
@@ -102,7 +102,7 @@ def network(train_X, train_y, net_cfg, cfg):
         # rmse = tf.keras.metrics.RootMeanSquaredError()
         model.compile(
             loss=CustomLoss(kind="continuous", reduce_loss=True),
-            optimizer=Adam(lr=eval(net_cfg["lr"]), clipvalue=0.5),
+            optimizer=Adam(lr=eval(net_cfg["lr"]), clipvalue=0.5),  # this was 0.5
         )
     model.summary()  # uncomment for debugging
 
@@ -139,17 +139,17 @@ def load_data():
     column_names = [id_col, time_col] + feature_cols
 
     train_x_orig = pd.read_csv(
-        "./DataSets/CMAPSS/train_FD001.csv", header=None, sep="\s+", decimal="."
+        "./DataSets/CMAPSS/train_FD003.csv", header=None, sep="\s+", decimal="."
     )
     train_x_orig.columns = column_names
 
     test_x_orig = pd.read_csv(
-        "./DataSets/CMAPSS/test_FD001.csv", header=None, sep="\s+", decimal="."
+        "./DataSets/CMAPSS/test_FD003.csv", header=None, sep="\s+", decimal="."
     )
     test_x_orig.columns = column_names
 
     test_y_orig = pd.read_csv(
-        "./DataSets/CMAPSS/RUL_FD001.csv", header=None, names=["T"]
+        "./DataSets/CMAPSS/RUL_FD003.csv", header=None, names=["T"]
     )
 
     # Make engine numbers and days zero-indexed
@@ -210,6 +210,8 @@ def main(net_cfg, cfg):
     train_x, train_y, _, _, _ = load_data()
     print(train_x.shape)
     print(train_y.shape)
+    print(np.isnan(train_x).any())
+    print(np.isnan(train_y).any())
 
     _, _ = network(train_x, train_y, net_cfg, cfg)
 
@@ -219,36 +221,36 @@ if __name__ == "__main__":
 
     net_cfg = {
         "num_rec": 2,
-        "max_time": 42,
-        "neuron_0": 99,
-        "neuron_1": 17,
-        "neuron_2": 49,
-        "activation_rec_0": "sigmoid",
-        "activation_rec_1": "tanh",
+        "max_time": 45,
+        "neuron_0": 76,
+        "neuron_1": 94,
+        "neuron_2": 73,
+        "activation_rec_0": "tanh",
+        "activation_rec_1": "sigmoid",
         "activation_rec_2": "tanh",
-        "rec_dropout_norm_0": 0.22050755000000002,
-        "rec_dropout_norm_1": 0.27450695,
-        "rec_dropout_norm_2": 0.42750525,
-        "recurrent_dropout_0": 0.34650615000000007,
-        "recurrent_dropout_1": 0.68850235,
-        "recurrent_dropout_2": 0.78750125,
-        "final_activation_0": "softplus",
+        "rec_dropout_norm_0": 0.04950945000000001,
+        "rec_dropout_norm_1": 0.3735058500000001,
+        "rec_dropout_norm_2": 0.76050155,
+        "recurrent_dropout_0": 0.32850635,
+        "recurrent_dropout_1": 0.51750425,
+        "recurrent_dropout_2": 0.4635048500000001,
+        "final_activation_0": "exp",
         "final_activation_1": "softplus",
-        "percentage": 67,
-        "rul": 111,
+        "percentage": 68,
+        "rul": 128,
         "rul_style": "nonlinear",
-        "lr": "1e-2",
-        "batch": "32",
+        "lr": "1e-3",  # original was 1e-3
+        "batch": "128",  # original was 128
         "num_den": 1,
-        "neuron_den_0": 76,
-        "neuron_den_1": 48,
-        "neuron_den_2": 47,
+        "neuron_den_0": 44,
+        "neuron_den_1": 50,
+        "neuron_den_2": 55,
         "activation_den_0": "sigmoid",
         "activation_den_1": "tanh",
-        "activation_den_2": "sigmoid",
-        "dropout_0": 0.17550805000000003,
-        "dropout_1": 0.50850435,
-        "dropout_2": 0.38250575000000003,
+        "activation_den_2": "tanh",
+        "dropout_0": 0.4995044500000001,
+        "dropout_1": 0.83250075,
+        "dropout_2": 0.59850335,
     }
     cfg = {
         "cv": 10,
