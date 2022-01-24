@@ -239,8 +239,8 @@ if __name__ == "__main__":
         "percentage": 68,
         "rul": 128,
         "rul_style": "nonlinear",
-        "lr": "1e-3",  # original was 1e-3
-        "batch": "128",  # original was 128
+        "lr": "1e-3",
+        "batch": "256",
         "num_den": 1,
         "neuron_den_0": 44,
         "neuron_den_1": 50,
