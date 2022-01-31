@@ -1,7 +1,7 @@
 # various
 import os
 
-available_gpus = [0]
+available_gpus = [0]  # , 1, 2, 3, 4, 5, 6, 7, 8, 9]
 str_available_gpus = [str(gpu) for gpu in available_gpus]
 str_available_gpus = ",".join(str_available_gpus)
 os.environ["CUDA_DEVICE_ORDER"] = "PCI_BUS_ID"
@@ -136,30 +136,6 @@ def main():
     #    net_cfg[names[i]] = values[0][i]
 
     # # Uncomment for debugging purposes.
-    net_cfg = {
-        "max_time": 100,
-        "lr": "0.001",
-        "num_rec": 3,
-        "neuron_0": 100,
-        "activation_0": "tanh",
-        "dropout_0": 0.25,
-        "recurrent_dropout_0": 0.25,
-        "neuron_1": 50,
-        "activation_1": "tanh",
-        "dropout_1": 0.25,
-        "recurrent_dropout_1": 0.25,
-        "neuron_2": 20,
-        "activation_2": "tanh",
-        "dropout_2": 0.25,
-        "recurrent_dropout_2": 0.25,
-        "final_activation_0": "exp",
-        "final_activation_1": "softplus",
-        "percentage": 50,
-        "rul": 115,
-        "rul_style": "nonlinear",
-        "batch": "128",
-    }
-
     """
     self, search_space, obj_func, surrogate, second_surrogate=None, ftarget=None,
                  minimize=True, noisy=False, max_eval=None, 
@@ -201,7 +177,7 @@ def main():
         available_gpus=available_gpus,
         ignore_gpu=ignore_gpu,
         bi_objective=True,
-        log_file=None,
+        log_file="./log_file_28_1.txt",
     )
 
     # run

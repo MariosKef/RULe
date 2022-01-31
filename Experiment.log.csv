@@ -23,3 +23,5 @@ Date, Description, Notes, Epochs, Train R2, Train RMSE, Test R2, Test RMSE
 14/1/2022, Run single objective MIPEGO (RMSE) on feature/single_objective branch, , 100 epochs (300 max 100 init),
 16/1/2022, Run single objective MIPEGO (RMSE) on feature/single_objective branch, , 100 epochs (300 max 100 init),
 16/1/2022, Run full model on dataset1 based on experiments from 14/1/2022, ,100 epochs,
+17/1/2022, ?
+28/1/2022, Run  MIPEGO on normal objective with median instead of mean (feature/uncertaity_no_cv_low_std_search_space_update) with new search space on dataset 2, NaN issue (pausing for now), 100 epochs (300 max 100 init),

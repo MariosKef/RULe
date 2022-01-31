@@ -14,26 +14,29 @@ def load_data():
     column_names = [id_col, time_col] + feature_cols
 
     train_x_orig = pd.read_csv(
-        "./DataSets/CMAPSS/train_FD003.csv", header=None, sep="\s+", decimal="."
+        "./DataSets/CMAPSS/train_FD002.csv", header=None, sep="\s+", decimal="."
     )
     train_x_orig.columns = column_names
 
     test_x_orig = pd.read_csv(
-        "./DataSets/CMAPSS/test_FD003.csv", header=None, sep="\s+", decimal="."
+        "./DataSets/CMAPSS/test_FD002.csv", header=None, sep="\s+", decimal="."
     )
     test_x_orig.columns = column_names
 
     test_y_orig = pd.read_csv(
-        "./DataSets/CMAPSS/RUL_FD003.csv", header=None, names=["T"]
+        "./DataSets/CMAPSS/RUL_FD002.csv", header=None, names=["T"]
     )
 
     # Make engine numbers and days zero-indexed
     train_x_orig.iloc[:, 0:2] -= 1
     test_x_orig.iloc[:, 0:2] -= 1
 
+    print(train_x_orig.shape)
+    print(test_x_orig.shape)
+
     train_idx = np.random.choice(
-        range(train_x_orig.unit_number.unique().max() + 1), replace=False, size=80
-    )  # selecting 80 units for training
+        range(train_x_orig.unit_number.unique().max() + 1), replace=False, size=208
+    )  # selecting 80% units for training
     train_idx.sort()
 
     # print(train_idx)
