@@ -83,7 +83,7 @@ def obj_function(net_cfg, cfg=None):
     train_all = []
     test_all = []
 
-    file = "results_single_obj_dataset_3_16_1"
+    file = "results_single_obj_dataset_1_3_2"
     columns = [
         "rmse_train",
         "mae_train",
@@ -331,6 +331,10 @@ def obj_function(net_cfg, cfg=None):
     results["uncertainty_test"] = std_test
     results["net_cfg"] = json.dumps(net_cfg)
 
+    x = results["rmse_test"]
+    y = results["rmse_test"].mean()
+    z = rmse_test
+
     print(results)
 
     # return (
@@ -349,8 +353,12 @@ def obj_function(net_cfg, cfg=None):
     else:
         results.to_csv("./" + file, mode="w", index=False, header=True)
 
-    if np.isfinite(results["rmse_test"].mean()):
-        return results["rmse_test"].mean()
+    if np.isfinite(results["rmse_test"].mean()) and np.isfinite(
+        results["uncertainty_test"].mean()
+    ):
+        return 2 / (
+            (1 / results["rmse_test"].mean()) + (1 / results["uncertainty_test"].mean())
+        )
     else:
         return 1e4
     # end = time.time()
