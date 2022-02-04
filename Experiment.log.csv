@@ -20,8 +20,9 @@ Date, Description, Notes, Epochs, Train R2, Train RMSE, Test R2, Test RMSE
 14/12/2021, Run  MIPEGO on normal objective with median instead of mean (feature/uncertaity_no_cv_low_std_search_space_update) with new search space ([1-3] num recurrent layers), No problems,  100 epochs (300 max 100 init),
 25/12/2021, Run MIPEGO on new objective brunch (feature/uncertaity_no_cv_low_std_new_objective), Multiple GPUs, 100 epochs (300 max 100 init),
 26/12/2021, Run  MIPEGO on normal objective with median instead of mean (feature/uncertaity_no_cv_low_std_search_space_update) with new search space on dataset 3, No issues, 100 epochs (300 max 100 init),
-14/1/2022, Run single objective MIPEGO (RMSE) on feature/single_objective branch, , 100 epochs (300 max 100 init),
-16/1/2022, Run single objective MIPEGO (RMSE) on feature/single_objective branch, , 100 epochs (300 max 100 init),
+14/1/2022, Run single objective MIPEGO (RMSE) on feature/single_objective branch dataset 1, No problem , 100 epochs (300 max 100 init),
+16/1/2022, Run single objective MIPEGO (RMSE) on feature/single_objective branch dataset 3, No problem , 100 epochs (300 max 100 init),
 16/1/2022, Run full model on dataset1 based on experiments from 14/1/2022, ,100 epochs,
 17/1/2022, ?
 28/1/2022, Run  MIPEGO on normal objective with median instead of mean (feature/uncertaity_no_cv_low_std_search_space_update) with new search space on dataset 2, NaN issue (pausing for now), 100 epochs (300 max 100 init),
+3/2/2022, Run single objective MIPEGO on feature/single_objective branch dataset 1 with harmonic mean of test uncertainty and test rmse, , 100 epochs (300 max 100 init),
