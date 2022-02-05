@@ -35,7 +35,7 @@ def load_data():
     print(test_x_orig.shape)
 
     train_idx = np.random.choice(
-        range(train_x_orig.unit_number.unique().max() + 1), replace=False, size=208
+        range(train_x_orig.unit_number.unique().max() + 1), replace=False, size=80
     )  # selecting 80% units for training
     train_idx.sort()
 
