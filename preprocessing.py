@@ -3,7 +3,18 @@ import tqdm
 from tqdm import tqdm
 
 
-def build_data(units, time, x, max_time, is_test, mask_value, original_data, net_cfg, label='linear', **kwargs):
+def build_data(
+    units,
+    time,
+    x,
+    max_time,
+    is_test,
+    mask_value,
+    original_data,
+    net_cfg,
+    label="linear",
+    **kwargs
+):
     """
     This function prepares the data by segmenting it into subsequences of length max_time
     by also padding, by pad_value, the time-steps when there is no data.
@@ -31,7 +42,7 @@ def build_data(units, time, x, max_time, is_test, mask_value, original_data, net
     for i in tqdm(n_units):
         # When did the engine fail? (Last day + 1 for train data, irrelevant for test.)
         max_unit_time = int(np.max(time[units == i])) + 1
-        
+
         if is_test:
             start = max_unit_time - 1
         else:
@@ -40,8 +51,7 @@ def build_data(units, time, x, max_time, is_test, mask_value, original_data, net
         this_x = []
 
         for j in range(start, max_unit_time):
-            
-            
+
             engine_x = x[units == i]
 
             if is_test:
@@ -50,31 +60,41 @@ def build_data(units, time, x, max_time, is_test, mask_value, original_data, net
                 original_max = original_data[int(i)]
                 # print(f'j {j}')
                 # print(f'original_max {original_max}')
-                if label == 'linear':
+                if label == "linear":
                     out_y.append(original_max - j)
                 else:
-                    if j <= int(original_max*net_cfg['percentage']/100):
-                        out_y.append(net_cfg['rul'])  # value taken from Heimes et al. (2008)
+                    if j <= int(original_max * net_cfg["percentage"] / 100):
+                        out_y.append(
+                            net_cfg["rul"]
+                        )  # value taken from Heimes et al. (2008)
                         # print(out_y[-1])
                         # print(net_cfg['rul'])
                         # print('\n')
 
                     else:
-                        p = (0 - net_cfg['rul']) / (original_max - int(original_max*net_cfg['percentage']/100))
+                        p = (0 - net_cfg["rul"]) / (
+                            original_max
+                            - int(original_max * net_cfg["percentage"] / 100)
+                        )
                         rul = p * j - p * original_max
                         out_y.append(rul)
                         # print(rul)
                         # print('\n')
 
             else:
-                if label == 'linear':
+                if label == "linear":
                     out_y.append(max_unit_time - j)
                 else:
-                    if j <= int(max_unit_time*net_cfg['percentage']/100):
-                        out_y.append(net_cfg['rul'])  # value taken from Heimes et al. (2008)
+                    if j <= int(max_unit_time * net_cfg["percentage"] / 100):
+                        out_y.append(
+                            net_cfg["rul"]
+                        )  # value taken from Heimes et al. (2008)
 
                     else:
-                        p = (0 - net_cfg['rul']) / (max_unit_time - int(max_unit_time*net_cfg['percentage']/100))
+                        p = (0 - net_cfg["rul"]) / (
+                            max_unit_time
+                            - int(max_unit_time * net_cfg["percentage"] / 100)
+                        )
                         rul = p * j - p * max_unit_time
                         #                     out_y.append(max_unit_time - j)
                         out_y.append(rul)
@@ -82,14 +102,14 @@ def build_data(units, time, x, max_time, is_test, mask_value, original_data, net
             xtemp = np.zeros((1, max_time, d))
             xtemp += mask_value
 
-            xtemp[:, max_time - min(j, max_time - 1) - 1:max_time, :] = engine_x[max(0, j - max_time + 1):j + 1, :]
+            xtemp[:, max_time - min(j, max_time - 1) - 1 : max_time, :] = engine_x[
+                max(0, j - max_time + 1) : j + 1, :
+            ]
             this_x.append(xtemp)
 
         this_x = np.concatenate(this_x)
         out_x.append(this_x)
     out_x = np.concatenate(out_x)
-    out_y = np.array(out_y).reshape(len(out_y), 1)  # np.concatenate(out_y) (uncomment when adding event. See comment above)
+    out_y = np.array(out_y).reshape(len(out_y), 1)
 
-    # if is_test:
-    #     print(out_y)
     return out_x, out_y

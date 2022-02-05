@@ -63,7 +63,7 @@ def network(train_X, train_y, net_cfg, cfg):
         last = 0
         if net_cfg["num_rec"] > 1:
             for i in np.arange(net_cfg["num_rec"] - 1):
-                masking_layer = keras.layers.GRU(
+                masking_layer = keras.layers.LSTM(
                     net_cfg["neuron_" + str(i)],
                     activation=net_cfg["activation_rec_" + str(i)],
                     dropout=net_cfg["rec_dropout_norm_" + str(i)],
@@ -72,7 +72,7 @@ def network(train_X, train_y, net_cfg, cfg):
                 )(masking_layer)
             last = i + 1
 
-        gru_last = keras.layers.GRU(
+        gru_last = keras.layers.LSTM(
             net_cfg["neuron_" + str(last)],
             activation=net_cfg["activation_rec_" + str(last)],
             dropout=net_cfg["rec_dropout_norm_" + str(last)],

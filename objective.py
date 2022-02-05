@@ -140,7 +140,6 @@ def obj_function(net_cfg, cfg=None):
         label=net_cfg["rul_style"],
     )
 
-    # print(test_y)
     # only for debugging
     print(
         "train_x",
