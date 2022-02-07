@@ -21,7 +21,6 @@ tf.random.set_seed(42)
 from sklearn import pipeline
 from sklearn.feature_selection import VarianceThreshold
 from sklearn.metrics import mean_squared_error, mean_absolute_error, r2_score
-from sklearn.model_selection import KFold
 from sklearn.preprocessing import MinMaxScaler
 from tensorflow.keras import backend as k
 
