@@ -207,7 +207,7 @@ def obj_function(net_cfg, cfg=None):
         train_result = np.concatenate((train_y, train_predict), axis=1)
         train_results_df = pd.DataFrame(
             train_result,
-            columns=["T", "meadian_alpha", "median_beta", "std_alpha", "std_beta"],
+            columns=["T", "median_alpha", "median_beta", "std_alpha", "std_beta"],
         )
         train_results_df["unit_number"] = train_x_orig["unit_number"].to_numpy()
         train_results_df["time"] = train_x_orig["time"].to_numpy()
