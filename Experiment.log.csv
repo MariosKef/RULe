@@ -27,5 +27,5 @@ Date, Description, Notes, Epochs, Train R2, Train RMSE, Test R2, Test RMSE
 28/1/2022, Run  MIPEGO on normal objective with median instead of mean (feature/uncertaity_no_cv_low_std_search_space_update) with new search space on dataset 2, NaN issue (pausing for now), 100 epochs (300 max 100 init),
 3/2/2022, Run single objective MIPEGO on feature/single_objective branch dataset 1 with harmonic mean of test uncertainty and test rmse, , 100 epochs (300 max 100 init),
 4/2/2022, Run full model on dataset1 based on experiments from 14/1/2022, No problem (no better RMSE),300 epochs,
-5/2/2022, CHANGED GRU to LSTM. Perhaps this will help,
-5/2/2022, Run  MIPEGO on normal objective with median instead of mean (feature/LSTM_branch), , 300 epochs (300 max 30 init),
+5/2/2022, CHANGED GRU to LSTM. Perhaps this will help with organizing the workspace,
+7/2/2022, Run MIPEGO on normal objective with median instead of mean (feature/LSTM_branch), Crashed because of update of server (not bug), 300 epochs (300 max 30 init),
