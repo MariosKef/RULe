@@ -49,7 +49,7 @@ class obj_func(object):
             outs = eval(outs.split("\n")[-2])
             print(f"outs after splitting: {outs}")
 
-            outputval = float(outs)
+            outputval = float(outs[0])
             print(f"outputval: {outputval}")
 
             if np.isnan(outputval).any():
@@ -207,7 +207,7 @@ def main():
         n_job=10,
         verbose=True,
         random_seed=42,
-        logger="log_file_single_objective_dataset_1_3_2.txt",
+        logger="log_file_single_objective_dataset_3_11_2.txt",
         eval_type="dict",
     )
 

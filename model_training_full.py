@@ -3,7 +3,7 @@ import os
 os.environ["CUDA_DEVICE_ORDER"] = "PCI_BUS_ID"
 os.environ[
     "CUDA_VISIBLE_DEVICES"
-] = "10,11,12,14,15"  # uncomment in case running ONLY on CPU is required
+] = "0,1,2,3,4,5,6,7,8,9"  # uncomment in case running ONLY on CPU is required
 
 import tensorflow as tf
 
@@ -43,12 +43,12 @@ def network(train_X, train_y, net_cfg, cfg):
     reduce_lr = callbacks.ReduceLROnPlateau(monitor="loss")
     early_stopping = callbacks.EarlyStopping(monitor="loss", patience=5)
     checkpoint_filepath = (
-        "./Final_experiments/dataset_3/SO/saved_models_16_1/cp-{epoch:04d}.ckpt"
+        "./Harmonic_Mean_Results/dataset_1/74/saved_models_16_2/cp-{epoch:04d}.ckpt"
     )
     checkpoint = callbacks.ModelCheckpoint(
         filepath=checkpoint_filepath, monitor="loss", verbose=1
     )
-    logdir = "Final_experiments/dataset_3/SO/logs"  # + datetime.now().strftime("%Y%m%d-%H%M%S")
+    logdir = "Harmonic_Mean_Results/dataset_1/74/logs"  # + datetime.now().strftime("%Y%m%d-%H%M%S")
     tensorboard = callbacks.TensorBoard(log_dir=logdir)
 
     window = train_X.shape[1]
@@ -139,17 +139,17 @@ def load_data():
     column_names = [id_col, time_col] + feature_cols
 
     train_x_orig = pd.read_csv(
-        "./DataSets/CMAPSS/train_FD003.csv", header=None, sep="\s+", decimal="."
+        "./DataSets/CMAPSS/train_FD001.csv", header=None, sep="\s+", decimal="."
     )
     train_x_orig.columns = column_names
 
     test_x_orig = pd.read_csv(
-        "./DataSets/CMAPSS/test_FD003.csv", header=None, sep="\s+", decimal="."
+        "./DataSets/CMAPSS/test_FD001.csv", header=None, sep="\s+", decimal="."
     )
     test_x_orig.columns = column_names
 
     test_y_orig = pd.read_csv(
-        "./DataSets/CMAPSS/RUL_FD003.csv", header=None, names=["T"]
+        "./DataSets/CMAPSS/RUL_FD001.csv", header=None, names=["T"]
     )
 
     # Make engine numbers and days zero-indexed
@@ -221,36 +221,36 @@ if __name__ == "__main__":
 
     net_cfg = {
         "num_rec": 2,
-        "max_time": 45,
-        "neuron_0": 76,
-        "neuron_1": 94,
-        "neuron_2": 73,
+        "max_time": 34,
+        "neuron_0": 99,
+        "neuron_1": 72,
+        "neuron_2": 70,
         "activation_rec_0": "tanh",
         "activation_rec_1": "sigmoid",
-        "activation_rec_2": "tanh",
-        "rec_dropout_norm_0": 0.04950945000000001,
-        "rec_dropout_norm_1": 0.3735058500000001,
-        "rec_dropout_norm_2": 0.76050155,
-        "recurrent_dropout_0": 0.32850635,
-        "recurrent_dropout_1": 0.51750425,
-        "recurrent_dropout_2": 0.4635048500000001,
+        "activation_rec_2": "sigmoid",
+        "rec_dropout_norm_0": 0.07650915,
+        "rec_dropout_norm_1": 0.39150565000000004,
+        "rec_dropout_norm_2": 0.00450995,
+        "recurrent_dropout_0": 0.70650215,
+        "recurrent_dropout_1": 0.3645059500000001,
+        "recurrent_dropout_2": 0.8235008500000001,
         "final_activation_0": "exp",
-        "final_activation_1": "softplus",
-        "percentage": 68,
-        "rul": 128,
+        "final_activation_1": "exp",
+        "percentage": 73,
+        "rul": 117,
         "rul_style": "nonlinear",
         "lr": "1e-3",
-        "batch": "256",
+        "batch": "128",
         "num_den": 1,
-        "neuron_den_0": 44,
-        "neuron_den_1": 50,
-        "neuron_den_2": 55,
+        "neuron_den_0": 18,
+        "neuron_den_1": 91,
+        "neuron_den_2": 66,
         "activation_den_0": "sigmoid",
-        "activation_den_1": "tanh",
-        "activation_den_2": "tanh",
-        "dropout_0": 0.4995044500000001,
-        "dropout_1": 0.83250075,
-        "dropout_2": 0.59850335,
+        "activation_den_1": "sigmoid",
+        "activation_den_2": "sigmoid",
+        "dropout_0": 0.58050355,
+        "dropout_1": 0.76050155,
+        "dropout_2": 0.66150265,
     }
     cfg = {
         "cv": 10,

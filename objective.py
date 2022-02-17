@@ -83,7 +83,7 @@ def obj_function(net_cfg, cfg=None):
     train_all = []
     test_all = []
 
-    file = "results_single_obj_dataset_1_3_2"
+    file = "new_results_single_obj_dataset_3_11_2"
     columns = [
         "rmse_train",
         "mae_train",
@@ -353,11 +353,12 @@ def obj_function(net_cfg, cfg=None):
     else:
         results.to_csv("./" + file, mode="w", index=False, header=True)
 
-    if np.isfinite(results["rmse_test"].mean()) and np.isfinite(
-        results["uncertainty_test"].mean()
+    if np.isfinite(results["rmse_test"].to_numpy()) and np.isfinite(
+        results["uncertainty_test"].to_numpy()
     ):
         return 2 / (
-            (1 / results["rmse_test"].mean()) + (1 / results["uncertainty_test"].mean())
+            (1 / results["rmse_test"].to_numpy())
+            + (1 / results["uncertainty_test"].to_numpy())
         )
     else:
         return 1e4
