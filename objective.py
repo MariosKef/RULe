@@ -319,6 +319,7 @@ def obj_function(net_cfg, cfg=None):
     # Uncomment for debugging
     print(results)
 
+    # Saving results
     if os.path.isfile(file):
         results.to_csv("./" + file, mode="a", index=False, header=False)
     else:
