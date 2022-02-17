@@ -316,6 +316,7 @@ def obj_function(net_cfg, cfg=None):
     results["uncertainty_test"] = std_test
     results["net_cfg"] = json.dumps(net_cfg)
 
+    # Uncomment for debugging
     print(results)
 
     if os.path.isfile(file):
