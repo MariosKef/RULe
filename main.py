@@ -1,7 +1,7 @@
 # various
 import os
 
-available_gpus = [0]  # , 1, 2, 3, 4, 5, 6, 7, 8, 9]
+available_gpus = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
 str_available_gpus = [str(gpu) for gpu in available_gpus]
 str_available_gpus = ",".join(str_available_gpus)
 os.environ["CUDA_DEVICE_ORDER"] = "PCI_BUS_ID"
@@ -18,10 +18,6 @@ import time
 from mipego_multi import mipego
 from mipego_multi.Surrogate import RandomForest
 from mipego_multi.SearchSpace import ContinuousSpace, NominalSpace, OrdinalSpace
-
-from objective import obj_function
-
-# from objective_total_var import obj_function
 
 
 class obj_func(object):
@@ -108,7 +104,6 @@ def main():
     f_acts = (
         NominalSpace(final_activations, "final_activation") * 2
     )  # final activations. The "2" because we have 2
-    # outputs
 
     search_space = (
         num_rec
@@ -129,12 +124,6 @@ def main():
         * den_dropout_norm
     )
 
-    # values = search_space.sampling(1)
-    # names = search_space.var_name
-    # net_cfg = {}
-    # for i in range(len(names)):
-    #    net_cfg[names[i]] = values[0][i]
-
     # # Uncomment for debugging purposes.
     """
     self, search_space, obj_func, surrogate, second_surrogate=None, ftarget=None,
@@ -148,18 +137,14 @@ def main():
                  **obj_func_params
     """
 
-    # print(search_space.levels)
-
     model1 = RandomForest(levels=search_space.levels)
     model2 = RandomForest(levels=search_space.levels)
 
-    ignore_gpu = np.arange(
-        available_gpus[-1] + 1, 20
-    ).tolist()  # before available_gpus[0] is missing [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 12]
+    ignore_gpu = np.arange(available_gpus[-1] + 1, 20).tolist()
 
     print(ignore_gpu)
 
-    # now define the optimizer.
+    # Optimizer contructor
     opt = mipego(
         search_space,
         objective,
@@ -182,73 +167,11 @@ def main():
 
     # run
     opt.run()
-    # incumbent, stop_dict = opt.run()
-    # print(incumbent)
-
-    # net_cfg = {
-    #     "num_rec": 4,
-    #     "max_time": 24,
-    #     "neuron_0": 76,
-    #     "neuron_1": 75,
-    #     "neuron_2": 74,
-    #     "neuron_3": 66,
-    #     "activation_0": "tanh",
-    #     "activation_1": "tanh",
-    #     "activation_2": "sigmoid",
-    #     "activation_3": "sigmoid",
-    #     "dropout_0": 0.018692516794622607,
-    #     "dropout_1": 0.8002018342665917,
-    #     "dropout_2": 0.615094589188039,
-    #     "dropout_3": 0.08230738757019833,
-    #     "recurrent_dropout_0": 0.6421264747391056,
-    #     "recurrent_dropout_1": 0.8933998465284962,
-    #     "recurrent_dropout_2": 0.6402495109098905,
-    #     "recurrent_dropout_3": 0.6693624215836003,
-    #     "final_activation_0": "softplus",
-    #     "final_activation_1": "softplus",
-    #     "percentage": 62,
-    #     "rul": 124,
-    #     "rul_style": "nonlinear",
-    #     "lr": "0.0008896860421074306",
-    #     "batch": "128",
-    # }
-    # print(net_cfg)
-    # (
-    #     model,
-    #     train_results_df,
-    #     test_results_df,
-    #     test_x_orig,
-    #     test_y_orig,
-    #     scaler,
-    #     train_x,
-    #     test_x,
-    # ) = obj_function(net_cfg, cfg=None)
-
-    # return (
-    #     model,
-    #     train_results_df,
-    #     test_results_df,
-    #     test_x_orig,
-    #     test_y_orig,
-    #     scaler,
-    #     train_x,
-    #     test_x,
-    # )
 
 
 if __name__ == "__main__":
-    # General hyperparameters
-    # cfg = {'cv': 2, 'shuffle': True,
-    #    'random_state': 21,
-    #    'mask_value': -99,
-    #    'reps': 30,
-    #    'epochs': 2,
-    #    'batches': 64}
 
-    # incumbent = main()
     start = time.time()
     main()
     end = time.time()
     print(f"Elapsed time: {(end-start)/60} minutes")
-    # rmse, std =  obj_function(net_cfg, cfg)
-    # print(incumbent)

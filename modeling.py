@@ -24,7 +24,7 @@ def network(train_X, train_y, test_X, test_y, net_cfg, cfg):
     nan_terminator = callbacks.TerminateOnNaN()
     reduce_lr = callbacks.ReduceLROnPlateau(monitor="val_loss")
     early_stopping = callbacks.EarlyStopping(patience=5)
-    #     tensorboard = callbacks.TensorBoard(log_dir = './logs_2D')
+    # tensorboard = callbacks.TensorBoard(log_dir = './logs_2D')
 
     window = train_X.shape[1]
     n_features = train_X.shape[2]
@@ -77,8 +77,7 @@ def network(train_X, train_y, test_X, test_y, net_cfg, cfg):
         loss=CustomLoss(kind="continuous", reduce_loss=True),
         optimizer=Adam(lr=eval(net_cfg["lr"]), clipvalue=0.5),
     )
-    model.summary()  # uncomment for debugging
-
+    model.summary()
     model.fit(
         train_X,
         train_y,

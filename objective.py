@@ -62,11 +62,11 @@ def obj_function(net_cfg, cfg=None):
         test_x_orig,
         test_y_orig,
     ) = load_data()
-    print(train_x_orig.shape)
-    print(vld_trunc.shape)
-    print(original_len.shape)
-    # print(original_len)
-    # print(vld_trunc.unit_number.unique())
+
+    # Uncomment for debugging
+    # print(train_x_orig.shape)
+    # print(vld_trunc.shape)
+    # print(original_len.shape)
 
     rmse_train = []
     r2_train = []
@@ -139,26 +139,20 @@ def obj_function(net_cfg, cfg=None):
         label=net_cfg["rul_style"],
     )
 
-    # only for debugging
-    print(
-        "train_x",
-        train_x.shape,
-        "train_y",
-        train_y.shape,
-        "test_x",
-        test_x.shape,
-        "test_y",
-        test_y.shape,
-    )
+    # Uncomment for debugging
+    # print(
+    #     "train_x",
+    #     train_x.shape,
+    #     "train_y",
+    #     train_y.shape,
+    #     "test_x",
+    #     test_x.shape,
+    #     "test_y",
+    #     test_y.shape,
+    # )
 
     # training
     model, history = network(train_x, train_y, test_x, test_y, net_cfg, cfg)
-
-    # For debugging
-    # plt.plot(history.history['loss'], label='training')
-    # plt.plot(history.history['val_loss'], label='validation')
-    # plt.title('loss')
-    # plt.legend()
 
     # predicting the rul on the train fold
     train_predict_1 = []
@@ -216,8 +210,6 @@ def obj_function(net_cfg, cfg=None):
         ].apply(lambda row: weibull_mean(row[0], row[1]), axis=1)
         train_results_df["uncertainty"] = np.mean(train_predict[:, 2:], axis=1)
 
-        # C = train_results_df["uncertainty"].isnull().values.any()
-
         # predicting the rul on the test fold
         test_predict_1 = []
         test_predict_2 = []
@@ -253,9 +245,7 @@ def obj_function(net_cfg, cfg=None):
             ]
         )
 
-        test_predict = np.resize(
-            test_predict, (test_x.shape[0], 4)
-        )  # changed from 2 to 4
+        test_predict = np.resize(test_predict, (test_x.shape[0], 4))
         test_result = np.concatenate((test_y, test_predict), axis=1)
         test_results_df = pd.DataFrame(
             test_result,
@@ -266,8 +256,6 @@ def obj_function(net_cfg, cfg=None):
             ["median_alpha", "median_beta"]
         ].apply(lambda row: weibull_mean(row[0], row[1]), axis=1)
         test_results_df["uncertainty"] = np.mean(test_predict[:, 2:], axis=1)
-
-        # C_ = test_results_df["uncertainty"].isnull().values.any()
 
         # General administration
         train_all.append(train_results_df)
@@ -330,17 +318,6 @@ def obj_function(net_cfg, cfg=None):
 
     print(results)
 
-    # return (
-    #     model,
-    #     train_results_df,
-    #     test_results_df,
-    #     test_x_orig,
-    #     test_y_orig,
-    #     scaler,
-    #     train_x,
-    #     test_x,
-    # )
-
     if os.path.isfile(file):
         results.to_csv("./" + file, mode="a", index=False, header=False)
     else:
@@ -352,8 +329,6 @@ def obj_function(net_cfg, cfg=None):
         return results["rmse_test"].mean(), results["uncertainty_test"].mean(), True
     else:
         return 1e4, 1e4, False  # not successful
-    # end = time.time()
-    # print(f'Elapsed time: {(end - start) / 60} minutes')
 
 
 # system arguments (configuration)
@@ -362,7 +337,7 @@ if len(sys.argv) > 2 and sys.argv[1] == "--cfg":
     if len(sys.argv) > 3:
         gpu = sys.argv[3]
 
-        os.environ["CUDA_DEVICE_ORDER"] = "PCI_BUS_ID"  # see issue #152
+        os.environ["CUDA_DEVICE_ORDER"] = "PCI_BUS_ID"
         os.environ["CUDA_VISIBLE_DEVICES"] = str(gpu)
         physical_devices = tf.config.list_physical_devices("GPU")
         for device in physical_devices:

@@ -55,21 +55,14 @@ def build_data(
             engine_x = x[units == i]
 
             if is_test:
-                # print(i)
-                # print(original_data[int(i)])
+
                 original_max = original_data[int(i)]
-                # print(f'j {j}')
-                # print(f'original_max {original_max}')
+
                 if label == "linear":
                     out_y.append(original_max - j)
                 else:
                     if j <= int(original_max * net_cfg["percentage"] / 100):
-                        out_y.append(
-                            net_cfg["rul"]
-                        )  # value taken from Heimes et al. (2008)
-                        # print(out_y[-1])
-                        # print(net_cfg['rul'])
-                        # print('\n')
+                        out_y.append(net_cfg["rul"])
 
                     else:
                         p = (0 - net_cfg["rul"]) / (
@@ -78,17 +71,13 @@ def build_data(
                         )
                         rul = p * j - p * original_max
                         out_y.append(rul)
-                        # print(rul)
-                        # print('\n')
 
             else:
                 if label == "linear":
                     out_y.append(max_unit_time - j)
                 else:
                     if j <= int(max_unit_time * net_cfg["percentage"] / 100):
-                        out_y.append(
-                            net_cfg["rul"]
-                        )  # value taken from Heimes et al. (2008)
+                        out_y.append(net_cfg["rul"])
 
                     else:
                         p = (0 - net_cfg["rul"]) / (
@@ -96,7 +85,7 @@ def build_data(
                             - int(max_unit_time * net_cfg["percentage"] / 100)
                         )
                         rul = p * j - p * max_unit_time
-                        #                     out_y.append(max_unit_time - j)
+
                         out_y.append(rul)
 
             xtemp = np.zeros((1, max_time, d))
