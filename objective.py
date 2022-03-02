@@ -83,7 +83,7 @@ def obj_function(net_cfg, cfg=None):
     train_all = []
     test_all = []
 
-    file = "new_results_single_obj_dataset_3_11_2"
+    file = "new_results_single_obj_dataset_1_2_3_retake"
     columns = [
         "rmse_train",
         "mae_train",
