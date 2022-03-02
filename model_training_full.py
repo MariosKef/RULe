@@ -3,7 +3,7 @@ import os
 os.environ["CUDA_DEVICE_ORDER"] = "PCI_BUS_ID"
 os.environ[
     "CUDA_VISIBLE_DEVICES"
-] = "0,1,2,3,4,5,6,7,8,9"  # uncomment in case running ONLY on CPU is required
+] = "0,1,2,3,4"  # uncomment in case running ONLY on CPU is required
 
 import tensorflow as tf
 
@@ -43,12 +43,12 @@ def network(train_X, train_y, net_cfg, cfg):
     reduce_lr = callbacks.ReduceLROnPlateau(monitor="loss")
     early_stopping = callbacks.EarlyStopping(monitor="loss", patience=5)
     checkpoint_filepath = (
-        "./Harmonic_Mean_Results/dataset_1/74/saved_models_16_2/cp-{epoch:04d}.ckpt"
+        "./Harmonic_Mean_Results/dataset_3/141/saved_models_23_2/cp-{epoch:04d}.ckpt"
     )
     checkpoint = callbacks.ModelCheckpoint(
         filepath=checkpoint_filepath, monitor="loss", verbose=1
     )
-    logdir = "Harmonic_Mean_Results/dataset_1/74/logs"  # + datetime.now().strftime("%Y%m%d-%H%M%S")
+    logdir = "Harmonic_Mean_Results/dataset_3/141/logs"  # + datetime.now().strftime("%Y%m%d-%H%M%S")
     tensorboard = callbacks.TensorBoard(log_dir=logdir)
 
     window = train_X.shape[1]
@@ -139,17 +139,17 @@ def load_data():
     column_names = [id_col, time_col] + feature_cols
 
     train_x_orig = pd.read_csv(
-        "./DataSets/CMAPSS/train_FD001.csv", header=None, sep="\s+", decimal="."
+        "./DataSets/CMAPSS/train_FD003.csv", header=None, sep="\s+", decimal="."
     )
     train_x_orig.columns = column_names
 
     test_x_orig = pd.read_csv(
-        "./DataSets/CMAPSS/test_FD001.csv", header=None, sep="\s+", decimal="."
+        "./DataSets/CMAPSS/test_FD003.csv", header=None, sep="\s+", decimal="."
     )
     test_x_orig.columns = column_names
 
     test_y_orig = pd.read_csv(
-        "./DataSets/CMAPSS/RUL_FD001.csv", header=None, names=["T"]
+        "./DataSets/CMAPSS/RUL_FD003.csv", header=None, names=["T"]
     )
 
     # Make engine numbers and days zero-indexed
@@ -220,37 +220,37 @@ if __name__ == "__main__":
     epochs = sys.argv[1]
 
     net_cfg = {
-        "num_rec": 2,
-        "max_time": 34,
-        "neuron_0": 99,
-        "neuron_1": 72,
-        "neuron_2": 70,
-        "activation_rec_0": "tanh",
-        "activation_rec_1": "sigmoid",
+        "num_rec": 1,
+        "max_time": 20,
+        "neuron_0": 23,
+        "neuron_1": 66,
+        "neuron_2": 31,
+        "activation_rec_0": "sigmoid",
+        "activation_rec_1": "tanh",
         "activation_rec_2": "sigmoid",
-        "rec_dropout_norm_0": 0.07650915,
-        "rec_dropout_norm_1": 0.39150565000000004,
-        "rec_dropout_norm_2": 0.00450995,
-        "recurrent_dropout_0": 0.70650215,
-        "recurrent_dropout_1": 0.3645059500000001,
-        "recurrent_dropout_2": 0.8235008500000001,
-        "final_activation_0": "exp",
-        "final_activation_1": "exp",
-        "percentage": 73,
-        "rul": 117,
+        "rec_dropout_norm_0": 0.25313218750000005,
+        "rec_dropout_norm_1": 0.3199283203125,
+        "rec_dropout_norm_2": 0.30938156250000004,
+        "recurrent_dropout_0": 0.33750625000000006,
+        "recurrent_dropout_1": 0.40781796875000004,
+        "recurrent_dropout_2": 0.39375562500000005,
+        "final_activation_0": "softplus",
+        "final_activation_1": "softplus",
+        "percentage": 61,
+        "rul": 114,
         "rul_style": "nonlinear",
-        "lr": "1e-3",
-        "batch": "128",
+        "lr": "1e-5",
+        "batch": "256",
         "num_den": 1,
-        "neuron_den_0": 18,
-        "neuron_den_1": 91,
-        "neuron_den_2": 66,
-        "activation_den_0": "sigmoid",
-        "activation_den_1": "sigmoid",
-        "activation_den_2": "sigmoid",
-        "dropout_0": 0.58050355,
-        "dropout_1": 0.76050155,
-        "dropout_2": 0.66150265,
+        "neuron_den_0": 37,
+        "neuron_den_1": 80,
+        "neuron_den_2": 75,
+        "activation_den_0": "tanh",
+        "activation_den_1": "tanh",
+        "activation_den_2": "tanh",
+        "dropout_0": 0.2766975994873047,
+        "dropout_1": 0.30938156250000004,
+        "dropout_2": 0.45000500000000004,
     }
     cfg = {
         "cv": 10,
