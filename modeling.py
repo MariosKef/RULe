@@ -1,3 +1,6 @@
+# Modeling script. Used during HPO
+
+# imports
 import os
 
 # os.environ["CUDA_DEVICE_ORDER"]="PCI_BUS_ID"
