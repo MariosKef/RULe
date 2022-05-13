@@ -1,9 +1,12 @@
+# Script to train model on entirety of data on selected
+# hyperparameter configuration.
+
 import os
 
 os.environ["CUDA_DEVICE_ORDER"] = "PCI_BUS_ID"
 os.environ[
     "CUDA_VISIBLE_DEVICES"
-] = "0,1,2,3,4,5,6,7,8,9"  # uncomment in case running ONLY on CPU is required
+] = "0,1,2,3,4,5,6,7,8,9"  # '-1' in case running ONLY on CPU is required
 
 import tensorflow as tf
 
@@ -216,7 +219,9 @@ def main(net_cfg, cfg):
 
 if __name__ == "__main__":
     epochs = sys.argv[1]
-
+    
+    # enter hyperparameter
+    # configuration here.
     net_cfg = net_cfg = {
         "num_rec": 1,
         "max_time": 38,

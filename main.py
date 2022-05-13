@@ -1,7 +1,9 @@
-# various
+# main script
+
+# various imports
 import os
 
-available_gpus = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+available_gpus = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]  # updated this list accordingly
 str_available_gpus = [str(gpu) for gpu in available_gpus]
 str_available_gpus = ",".join(str_available_gpus)
 os.environ["CUDA_DEVICE_ORDER"] = "PCI_BUS_ID"
@@ -60,6 +62,8 @@ def main():
     percentage = OrdinalSpace([25, 75], "percentage")
     rul = OrdinalSpace([110, 130], "rul")
     rul_style = NominalSpace(["linear", "nonlinear"], "rul_style")
+    # NOTE: 'nonlinear' corresponds to the piecewise linear method from 
+    # literature
 
     # General training
     # lr_rate = ContinuousSpace([1e-4, 1.0e-1], "lr")  # learning rate
@@ -140,7 +144,7 @@ def main():
     model1 = RandomForest(levels=search_space.levels)
     model2 = RandomForest(levels=search_space.levels)
 
-    ignore_gpu = np.arange(available_gpus[-1] + 1, 20).tolist()
+    ignore_gpu = np.arange(available_gpus[-1] + 1, 20).tolist()  # update this list accordingly
 
     print(ignore_gpu)
 
@@ -162,7 +166,7 @@ def main():
         available_gpus=available_gpus,
         ignore_gpu=ignore_gpu,
         bi_objective=True,
-        log_file="./log_file_28_1.txt",
+        log_file="./log_file.txt",
     )
 
     # run

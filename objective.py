@@ -1,3 +1,5 @@
+# Objective function to optimize
+
 # sklearn
 import math
 import os
@@ -14,6 +16,7 @@ import sys
 # tensorflow
 import tensorflow as tf
 
+# fix for reproducibility
 tf.random.set_seed(42)
 
 

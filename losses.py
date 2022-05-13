@@ -1,4 +1,6 @@
-# Tensorflow
+# Script defining losses.
+
+# Tensorflow imports
 import tensorflow as tf
 from tensorflow.keras import backend as k
 from tensorflow import keras

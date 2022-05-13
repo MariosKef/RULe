@@ -25,8 +25,8 @@ def build_data(
     :param max_time: maximum lookback
     :param is_test: (boolean) test set or train set
     :param mask_value: value to pad the sequences
+    :param label: the label creation method ('linear' or 'nonlinear')
     :param **kwargs: additional arguments that might be used for other datasets
-    :return: (ndarray) y. y[0] will be time remaining to an event, y[1] will be event indicator
     """
 
     # initializing output
@@ -40,7 +40,7 @@ def build_data(
     n_units = set(units)
     # print(n_units)
     for i in tqdm(n_units):
-        # When did the engine fail? (Last day + 1 for train data, irrelevant for test.)
+        # When did the engine fail? (Last day + 1 for train data. This is irrelevant for test data.)
         max_unit_time = int(np.max(time[units == i])) + 1
 
         if is_test:
