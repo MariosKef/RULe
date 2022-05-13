@@ -1,3 +1,5 @@
+# Script for preparing the data for the RNN
+
 import numpy as np
 import tqdm
 from tqdm import tqdm
