@@ -1,3 +1,6 @@
+# Activation functions for final dense layer of
+# the network.
+
 from tensorflow.keras import backend as k
 from tensorflow import keras
 import tensorflow as tf
@@ -5,15 +8,11 @@ import importlib
 
 
 class Activate(keras.layers.Layer):
-    """ Elementwise computation of alpha and regularized beta.
-        Wrapper to `output_lambda` using keras.layers.Activation.
-        See this for details.
-        - Usage
-            .. code-block:: python
-               wtte_activation = wtte.OuputActivation(init_alpha=1.,
-                                                 max_beta_value=4.0).activation
-               model.add(Dense(2))
-               model.add(Activation(wtte_activation))
+    """ 
+        Activation functions for final dense layer of the
+        network.
+        Elementwise computation of alpha and regularized beta.
+        Uses keras.layers.Activation (see modeling.py).
     """
 
     def __init__(self, net_cfg=None, **kwargs):
@@ -24,17 +23,17 @@ class Activate(keras.layers.Layer):
     def call(self, ab):
         """ (Internal function) Activation wrapper
         :param ab: original tensor with alpha and beta.
-        :return ab: return of `output_lambda` with `init_alpha` and `max_beta_value`.
+        :return x: return of keras.layers.Activation with `alpha` and `beta`.
         """
 
         self.func1 = self.net_cfg['final_activation_0']
         self.func2 = self.net_cfg['final_activation_1']
 
         a, b = tf.unstack(ab, axis=-1)
-        # print('f1: k.'+self.func1+"(a)")
-        a = eval('k.'+self.func1+"(a)")  # a = k.exp(a)
-        # print('f2: k.'+self.func2+"(b)")
-        b = eval('k.'+self.func2+"(b)")  # b = k.softplus(b)
+        # print('f1: k.'+self.func1+"(a)")  # uncomment for debugging
+        a = eval('k.'+self.func1+"(a)")
+        # print('f2: k.'+self.func2+"(b)")  # uncomment for debugging
+        b = eval('k.'+self.func2+"(b)")
 
         x = k.stack([a, b], axis=-1)
 
