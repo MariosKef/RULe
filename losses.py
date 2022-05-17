@@ -5,19 +5,19 @@ import tensorflow as tf
 from tensorflow.keras import backend as k
 from tensorflow import keras
 
+# Commented out for now.
+# def weibull_ttf(y, u, a, b):
+#     mttf = a * tf.exp(tf.math.lgamma(1 + 1 / b))
 
-def weibull_ttf(y, u, a, b):
-    mttf = a * tf.exp(tf.math.lgamma(1 + 1 / b))
-
-    return k.square(y - mttf)
+#     return k.square(y - mttf)
 
 
-def loglik_discrete(y, u, a, b, epsilon=k.epsilon()):
-    hazard0 = k.pow((y + epsilon) / a, b)
-    hazard1 = k.pow((y + 1.0) / a, b)
+# def loglik_discrete(y, u, a, b, epsilon=k.epsilon()):
+#     hazard0 = k.pow((y + epsilon) / a, b)
+#     hazard1 = k.pow((y + 1.0) / a, b)
 
-    loglikelihoods = u * k.log(k.exp(hazard1 - hazard0) - (1.0 - epsilon)) - hazard1
-    return loglikelihoods
+#     loglikelihoods = u * k.log(k.exp(hazard1 - hazard0) - (1.0 - epsilon)) - hazard1
+#     return loglikelihoods
 
 
 def loglik_continuous(y, u, a, b, epsilon=k.epsilon()):
@@ -28,8 +28,10 @@ def loglik_continuous(y, u, a, b, epsilon=k.epsilon()):
 
 
 class CustomLoss(keras.losses.Loss):
-    """Creates a keras WTTE-loss function.
-    :param kind:  One of 'discrete' or 'continuous'
+    """
+    Script defining the negative loglikelihood
+    of the Weibull dustribution.
+    :param kind:  One of 'discrete' or 'continuous or 'mttf'
     :type reduce_loss: Boolean
     """
 

@@ -1,5 +1,5 @@
-# Activation functions for final dense layer of
-# the network.
+# Script defining activation functions for 
+# final dense layer of the network.
 
 from tensorflow.keras import backend as k
 from tensorflow import keras
