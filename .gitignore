@@ -32,4 +32,5 @@ tests_dataset1.ipynb
 tests_dataset2.ipynb
 objective_total_var.py
 LSTM/
+Experiment.log.csv
 
