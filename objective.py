@@ -1,3 +1,5 @@
+# Objective function to optimize
+
 # sklearn
 import math
 import os
@@ -64,11 +66,12 @@ def obj_function(net_cfg, cfg=None):
         test_x_orig,
         test_y_orig,
     ) = load_data()
-    print(train_x_orig.shape)
-    print(vld_trunc.shape)
-    print(original_len.shape)
-    # print(original_len)
-    # print(vld_trunc.unit_number.unique())
+    
+    # Uncomment for debugging
+    # print(train_x_orig.shape)
+    # print(vld_trunc.shape)
+    # print(original_len.shape)
+
 
     rmse_train = []
     r2_train = []
@@ -141,18 +144,17 @@ def obj_function(net_cfg, cfg=None):
         label=net_cfg["rul_style"],
     )
 
-    # print(test_y)
-    # only for debugging
-    print(
-        "train_x",
-        train_x.shape,
-        "train_y",
-        train_y.shape,
-        "test_x",
-        test_x.shape,
-        "test_y",
-        test_y.shape,
-    )
+    # Uncomment for debugging
+    # print(
+    #    "train_x",
+    #    train_x.shape,
+    #    "train_y",
+    #    train_y.shape,
+    #    "test_x",
+    #    test_x.shape,
+    #    "test_y",
+    #    test_y.shape,
+    # )
 
     # training
     model, history = network(train_x, train_y, test_x, test_y, net_cfg, cfg)
@@ -218,8 +220,6 @@ def obj_function(net_cfg, cfg=None):
             ["mean_alpha", "mean_beta"]
         ].apply(lambda row: weibull_mean(row[0], row[1]), axis=1)
         train_results_df["uncertainty"] = np.mean(train_predict[:, 2:], axis=1)
-
-        # C = train_results_df["uncertainty"].isnull().values.any()
 
         # predicting the rul on the test fold
         test_predict_1 = []
@@ -335,7 +335,8 @@ def obj_function(net_cfg, cfg=None):
     y = results["rmse_test"].mean()
     z = rmse_test
 
-    print(results)
+    # Uncomment for debugging
+    #  print(results)
 
     # return (
     #     model,
@@ -347,7 +348,8 @@ def obj_function(net_cfg, cfg=None):
     #     train_x,
     #     test_x,
     # )
-
+    
+    # Saving results
     if os.path.isfile(file):
         results.to_csv("./" + file, mode="a", index=False, header=False)
     else:
@@ -362,8 +364,6 @@ def obj_function(net_cfg, cfg=None):
         )
     else:
         return 1e4
-    # end = time.time()
-    # print(f'Elapsed time: {(end - start) / 60} minutes')
 
 
 # system arguments (configuration)
@@ -371,9 +371,6 @@ if len(sys.argv) > 2 and sys.argv[1] == "--cfg":
     cfg = eval(sys.argv[2])
     if len(sys.argv) > 3:
         gpu = sys.argv[3]
-    # else:
-    #     available_gpus = gp.getAvailable(limit=10)
-    #     gpu = available_gpus[0]
 
     os.environ["CUDA_DEVICE_ORDER"] = "PCI_BUS_ID"  # see issue #152
     os.environ["CUDA_VISIBLE_DEVICES"] = str(gpu)

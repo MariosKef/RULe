@@ -1,3 +1,5 @@
+# main script
+
 # various
 import os
 
@@ -22,9 +24,7 @@ from mipego.SearchSpace import ContinuousSpace, NominalSpace, OrdinalSpace
 from objective import obj_function
 import GPUtil as gp
 
-# from objective_total_var import obj_function
-
-reserved_gpus = list(np.arange(gpus[-1] + 1, 20))
+reserved_gpus = list(np.arange(gpus[-1] + 1, 20))  # updated this list accordingly
 
 
 class obj_func(object):
@@ -62,10 +62,7 @@ class obj_func(object):
             print("Unexpected error:")
             traceback.print_exc()
             outputval = 1e4
-        # print(f" Reserved GPUs after execution: {reserved_gpus}")
-        # print("\n")
         reserved_gpus.remove(gpu)
-        # print(f" Unreserved GPUs: {reserved_gpus}")
         print("\n")
         return outputval
 
@@ -146,37 +143,7 @@ def main():
         + den_dropout_norm
     )
 
-    # values = search_space.sampling(1)
-    # names = search_space.var_name
-    # net_cfg = {}
-    # for i in range(len(names)):
-    #    net_cfg[names[i]] = values[0][i]
-
     # # Uncomment for debugging purposes.
-    net_cfg = {
-        "max_time": 100,
-        "lr": "0.001",
-        "num_rec": 3,
-        "neuron_0": 100,
-        "activation_0": "tanh",
-        "dropout_0": 0.25,
-        "recurrent_dropout_0": 0.25,
-        "neuron_1": 50,
-        "activation_1": "tanh",
-        "dropout_1": 0.25,
-        "recurrent_dropout_1": 0.25,
-        "neuron_2": 20,
-        "activation_2": "tanh",
-        "dropout_2": 0.25,
-        "recurrent_dropout_2": 0.25,
-        "final_activation_0": "exp",
-        "final_activation_1": "softplus",
-        "percentage": 50,
-        "rul": 115,
-        "rul_style": "nonlinear",
-        "batch": "128",
-    }
-
     """
     self, search_space, obj_func, surrogate, second_surrogate=None, ftarget=None,
                  minimize=True, noisy=False, max_eval=None, 
@@ -188,8 +155,6 @@ def main():
                  ref_time=3000.0, ref_loss=3.0, hvi_alpha=0.1, ignore_gpu=[],
                  **obj_func_params
     """
-
-    # print(search_space.levels)
 
     model1 = RandomForest(levels=search_space.levels)
     # model2 = RandomForest(levels=search_space.levels)
@@ -211,53 +176,12 @@ def main():
         eval_type="dict",
     )
 
-    # run
-    # opt.run()
+
     xopt, fopt, stop_dict = opt.run()
-    # print(incumbent)
-
-    # net_cfg = {
-    #     "num_rec": 4,
-    #     "max_time": 24,
-    #     "neuron_0": 76,
-    #     "neuron_1": 75,
-    #     "neuron_2": 74,
-    #     "neuron_3": 66,
-    #     "activation_0": "tanh",
-    #     "activation_1": "tanh",
-    #     "activation_2": "sigmoid",
-    #     "activation_3": "sigmoid",
-    #     "dropout_0": 0.018692516794622607,
-    #     "dropout_1": 0.8002018342665917,
-    #     "dropout_2": 0.615094589188039,
-    #     "dropout_3": 0.08230738757019833,
-    #     "recurrent_dropout_0": 0.6421264747391056,
-    #     "recurrent_dropout_1": 0.8933998465284962,
-    #     "recurrent_dropout_2": 0.6402495109098905,
-    #     "recurrent_dropout_3": 0.6693624215836003,
-    #     "final_activation_0": "softplus",
-    #     "final_activation_1": "softplus",
-    #     "percentage": 62,
-    #     "rul": 124,
-    #     "rul_style": "nonlinear",
-    #     "lr": "0.0008896860421074306",
-    #     "batch": "128",
-    # }
-    # print(net_cfg)
-
     return xopt, fopt, stop_dict
 
 
 if __name__ == "__main__":
-    # General hyperparameters
-    # cfg = {'cv': 2, 'shuffle': True,
-    #    'random_state': 21,
-    #    'mask_value': -99,
-    #    'reps': 30,
-    #    'epochs': 2,
-    #    'batches': 64}
-
-    # incumbent = main()
 
     start = time.time()
     xopt, fopt, stop_dict = main()

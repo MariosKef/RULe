@@ -1,9 +1,12 @@
+# Data ETL
+
 import pandas as pd
 import numpy as np
 
 
 def load_data():
 
+    # for reproducibility
     np.random.seed(42)
 
     id_col = "unit_number"

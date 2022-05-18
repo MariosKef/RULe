@@ -1,21 +1,23 @@
+# Script defining losses.
+
 # Tensorflow
 import tensorflow as tf
 from tensorflow.keras import backend as k
 from tensorflow import keras
 
+# Commented out for now.
+# def weibull_ttf(y, u, a, b):
+#     mttf = a * tf.exp(tf.math.lgamma(1 + 1 / b))
 
-def weibull_ttf(y, u, a, b):
-    mttf = a * tf.exp(tf.math.lgamma(1 + 1 / b))
-
-    return k.square(y - mttf)
+#     return k.square(y - mttf)
 
 
-def loglik_discrete(y, u, a, b, epsilon=k.epsilon()):
-    hazard0 = k.pow((y + epsilon) / a, b)
-    hazard1 = k.pow((y + 1.0) / a, b)
+# def loglik_discrete(y, u, a, b, epsilon=k.epsilon()):
+#     hazard0 = k.pow((y + epsilon) / a, b)
+#     hazard1 = k.pow((y + 1.0) / a, b)
 
-    loglikelihoods = u * k.log(k.exp(hazard1 - hazard0) - (1.0 - epsilon)) - hazard1
-    return loglikelihoods
+#     loglikelihoods = u * k.log(k.exp(hazard1 - hazard0) - (1.0 - epsilon)) - hazard1
+#     return loglikelihoods
 
 
 def loglik_continuous(y, u, a, b, epsilon=k.epsilon()):
@@ -26,26 +28,10 @@ def loglik_continuous(y, u, a, b, epsilon=k.epsilon()):
 
 
 class CustomLoss(keras.losses.Loss):
-    """Creates a keras WTTE-loss function.
-    - Usage
-        :Example:
-        .. code-block:: python
-           loss = wtte.Loss(kind='discrete').loss_function
-           model.compile(loss=loss, optimizer=RMSprop(lr=0.01))
-           # And with masking:
-           loss = wtte.Loss(kind='discrete',reduce_loss=False).loss_function
-           model.compile(loss=loss, optimizer=RMSprop(lr=0.01),
-                          sample_weight_mode='temporal')
-    .. note::
-        With masking keras needs to access each loss-contribution individually.
-        Therefore we do not sum/reduce down to scalar (dim 1), instead return a
-        tensor (with reduce_loss=False).
-    :param kind:  One of 'discrete' or 'continuous'
-    :param reduce_loss:
-    :param clip_prob: Clip likelihood to [log(clip_prob),log(1-clip_prob)]
-    :param regularize: Deprecated.
-    :param location: Deprecated.
-    :param growth: Deprecated.
+    """
+    Script defining the negative loglikelihood
+    of the Weibull dustribution.
+    :param kind:  One of 'discrete' or 'continuous or 'mttf'
     :type reduce_loss: Boolean
     """
 
