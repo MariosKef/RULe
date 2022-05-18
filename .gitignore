@@ -25,3 +25,10 @@ ho_no*
 *.pb
 variables.*
 *.txt
+Preliminary_Experiments_1D.ipynb 
+Preliminary_Experiments_2D_neg_loglikelihood.ipynb 
+Preliminary_Experiments.ipynb 
+tests_dataset1.ipynb  
+tests_dataset2.ipynb
+objective_total_var.py
+
