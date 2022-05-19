@@ -24,7 +24,6 @@ ho_no*
 *.pdf
 *.pb
 variables.*
-*.txt
 objective_total_var.py
 tests_dataset2.ipynb
 Preliminary_Experiments_1D.ipynb
