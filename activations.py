@@ -1,16 +1,47 @@
+# Script defining activation functions for 
+# final dense layer of the network.
+
 from tensorflow.keras import backend as k
+from tensorflow import keras
+import tensorflow as tf
+import importlib
 
 
-def activate(ab):
+class Activate(keras.layers.Layer):
+    """ 
+        Activation functions for final dense layer of the
+        network.
+        Elementwise computation of alpha and regularized beta.
+        Uses keras.layers.Activation (see modeling.py).
     """
-    Custom Keras activation function, outputs alpha neuron using exponentiation and beta using softplus
-    :param ab:
-    :return:
-    """
-    a = k.exp(ab[:, 0])
-    b = k.softplus(ab[:, 1])
 
-    a = k.reshape(a, (k.shape(a)[0], 1))
-    b = k.reshape(b, (k.shape(b)[0], 1))
+    def __init__(self, net_cfg=None, **kwargs):
+        super().__init__(**kwargs)
+        self.net_cfg = net_cfg
+        
 
-    return k.concatenate((a, b), axis=1)
+    def call(self, ab):
+        """ (Internal function) Activation wrapper
+        :param ab: original tensor with alpha and beta.
+        :return x: return of keras.layers.Activation with `alpha` and `beta`.
+        """
+
+        self.func1 = self.net_cfg['final_activation_0']
+        self.func2 = self.net_cfg['final_activation_1']
+
+        a, b = tf.unstack(ab, axis=-1)
+        # print('f1: k.'+self.func1+"(a)")  # uncomment for debugging
+        a = eval('k.'+self.func1+"(a)")
+        # print('f2: k.'+self.func2+"(b)")  # uncomment for debugging
+        b = eval('k.'+self.func2+"(b)")
+
+        x = k.stack([a, b], axis=-1)
+
+        return x
+
+    def get_config(self):
+        return {"net_cfg": self.net_cfg}
+
+    @classmethod
+    def from_config(cls, config):
+        return cls(**config)
