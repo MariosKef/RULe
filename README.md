@@ -13,11 +13,11 @@ This repository is the work of Marios Kefalas, PhD candidate at the Leiden Insti
 To install the pipeline you can do the following:
 * Clone the repository 
 
-```git clone https://github.com/MariosKef/automated-rul.git ~/rule```
+```git clone https://github.com/MariosKef/RULe.git ~/rule```
 
 * cd to the directory of the cloned repository
 
-``` cd ~/RULe```
+``` cd ~/rule```
 
 * Create the environment and install the requirements
 
@@ -32,7 +32,13 @@ to activate it:
 
 to install the requirements:
 
-```python3 -m pip install -r requirements.txt```
+```python3.8 -m pip install -r requirements.txt```
+
+to work on your own version locally:
+
+```cd ~/rule```
+
+```python3.8 -m pip install -e .```
 
 
 ## Acknowledgements 
