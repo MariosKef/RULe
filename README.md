@@ -1,6 +1,7 @@
 # An End-to-End Pipeline for Uncertainty Quantification and Remaining Useful Life Estimation: An Application on Aircraft Engines
 
 [![Python 3.8.8](https://img.shields.io/badge/python-3.8.8-green.svg?style=plastic)](https://www.python.org/downloads/release/python-388/)
+![MIT License](https://img.shields.io/github/license/MariosKef/automated_rul?style=plastic) 
 
 
 ## Introduction
