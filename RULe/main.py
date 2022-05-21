@@ -3,7 +3,7 @@
 # various imports
 import os
 
-available_gpus = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]  # updated this list accordingly
+available_gpus = [0,1,2]  # [1, 2, 3, 4, 5, 6, 7, 8, 9]  # updated this list accordingly
 str_available_gpus = [str(gpu) for gpu in available_gpus]
 str_available_gpus = ",".join(str_available_gpus)
 os.environ["CUDA_DEVICE_ORDER"] = "PCI_BUS_ID"
@@ -145,7 +145,7 @@ def main():
     model2 = RandomForest(levels=search_space.levels)
 
     ignore_gpu = np.arange(available_gpus[-1] + 1, 20).tolist()  # update this list accordingly
-
+    
     print(ignore_gpu)
 
     # Optimizer contructor
@@ -159,7 +159,7 @@ def main():
         infill="HVI",
         n_init_sample=100,
         n_point=1,
-        n_job=1,
+        n_job=10,
         optimizer="MIES",
         verbose=True,
         random_seed=42,

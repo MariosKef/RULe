@@ -44,7 +44,6 @@ def obj_function(net_cfg, cfg=None):
 
     if cfg == None:
         cfg = {
-            "cv": 10,
             "shuffle": True,
             "random_state": 21,
             "mask_value": -99,
