@@ -24,21 +24,23 @@ To install the pipeline you can do the following:
 ```python3.8 -m venv rule``` or 
 ```virtualenv --python=\<path to python 3.8 binaries\> rule```
 
-to activate it:
+Activate the environment:
 
 ```source rule/bin/activate``` (Linux/Unix)
 
 ```source rule/Scripts/activate``` (Windows)
 
-to install the requirements:
+Install the requirements:
 
 ```python3.8 -m pip install -r requirements.txt```
 
-to work on your own version locally:
+Install locally to work on your own version:
 
 ```cd ~/rule```
 
 ```python3.8 -m pip install -e .```
+
+## Usage
 
 
 ## Acknowledgements 
