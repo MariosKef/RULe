@@ -42,7 +42,9 @@ Install locally to work on your own version:
 ```python3.8 -m pip install -e .```
 
 ## Usage
+* For the hyperparameter optimization:
 
+``` python3 main.py ``` (note: be sure to update the ```log_file``` in the contructor of mipego inside the main.py with the path of your choice and the ```file``` variable for the results file in the objective.py)
 
 ## Acknowledgements 
 This work is part of the research programme Smart Industry SI2016 with project name CIMPLO and project number 15465, which is partly financed by the Netherlands Organisation for Scientific Research (NWO).
