@@ -222,7 +222,7 @@ if __name__ == "__main__":
     
     # enter hyperparameter
     # configuration here.
-    net_cfg = net_cfg = {
+    net_cfg = {
         "num_rec": 1,
         "max_time": 38,
         "neuron_0": 49,

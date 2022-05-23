@@ -42,9 +42,12 @@ Install locally to work on your own version:
 ```python3.8 -m pip install -e .```
 
 ## Usage
-* For the hyperparameter optimization:
+* For the hyperparameter optimization (HPO), run:
 
 ``` python3 main.py ``` (note: be sure to update the ```log_file``` in the contructor of mipego inside the main.py with the path of your choice and the ```file``` variable for the results file in the objective.py)
+
+* For the training of the full model, run:
+``` python3 model_training_full.py 100 ``` (note: be sure to update the ```net_cfg``` with the cfg of your choice from the HPO (previous step). The extra command line argument (here 100) indicates the number of training epochs.)
 
 ## Acknowledgements 
 This work is part of the research programme Smart Industry SI2016 with project name CIMPLO and project number 15465, which is partly financed by the Netherlands Organisation for Scientific Research (NWO).
