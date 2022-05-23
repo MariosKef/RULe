@@ -32,3 +32,5 @@ Preliminary_Experiments.ipynb
 LSTM/
 Experiment.log.csv
 *egg-info/
+GRU/
+Harmonic_Mean_Results/
