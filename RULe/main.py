@@ -3,7 +3,7 @@
 # various imports
 import os
 
-available_gpus = [0,1,2]  # [1, 2, 3, 4, 5, 6, 7, 8, 9]  # updated this list accordingly
+available_gpus = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]  # updated this list accordingly
 str_available_gpus = [str(gpu) for gpu in available_gpus]
 str_available_gpus = ",".join(str_available_gpus)
 os.environ["CUDA_DEVICE_ORDER"] = "PCI_BUS_ID"
