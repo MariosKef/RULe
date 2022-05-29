@@ -44,9 +44,13 @@ Install locally to work on your own version:
 ## Usage
 * For the hyperparameter optimization (HPO), run:
 
+``` cd ./RULe ```
+
 ``` python3 main.py ``` (note: be sure to update the ```log_file``` in the contructor of mipego inside the main.py with the path of your choice and the ```file``` variable for the results file in the objective.py)
 
 * For the training of the full model, run:
+
+``` cd ./RULe ```
 
 ``` python3 model_training_full.py 100 ``` (note: be sure to update the ```net_cfg``` with the cfg of your choice from the HPO (previous step). The extra command line argument (here 100) indicates the number of training epochs.)
 
