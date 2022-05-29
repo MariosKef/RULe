@@ -22,14 +22,14 @@ To install the pipeline you can do the following:
 
 * Create the environment and install the requirements
 
-```python3.8 -m venv rule``` or 
-```virtualenv --python=\<path to python 3.8 binaries\> rule```
+```\<path to python 3.8 binaries\> -m venv rule_env``` or 
+```virtualenv --python=\<path to python 3.8 binaries\> rule_env```
 
 Activate the environment:
 
-```source rule/bin/activate``` (Linux/Unix)
+```source rule_env/bin/activate``` (Linux/Unix)
 
-```source rule/Scripts/activate``` (Windows)
+```source rule_env/Scripts/activate``` (Windows)
 
 Install the requirements:
 
