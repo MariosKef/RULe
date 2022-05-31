@@ -31,6 +31,10 @@ Activate the environment:
 
 ```source rule_env/Scripts/activate``` (Windows)
 
+Upgrade pip:
+
+```python -m pip install --upgrade pip```
+
 Install the requirements:
 
 ```python -m pip install -r requirements.txt```

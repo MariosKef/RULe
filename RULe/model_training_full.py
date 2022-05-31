@@ -6,7 +6,10 @@ import os
 os.environ["CUDA_DEVICE_ORDER"] = "PCI_BUS_ID"
 os.environ[
     "CUDA_VISIBLE_DEVICES"
-] = "0,1,2,3,4,5,6,7,8,9"  # '-1' in case running ONLY on CPU is required
+] = "0,1,2,3,4,5,6,7"  # '-1' in case running ONLY on CPU is required.
+# update this list accordingly.
+# Note: There seems to be a bug in distribute.MirroredStrategy() 
+# for more than 8 GPUs.
 
 import tensorflow as tf
 
@@ -224,7 +227,7 @@ if __name__ == "__main__":
     # configuration here.
     net_cfg = {
         "num_rec": 1,
-        "max_time": 38,
+        "max_time": 38,python -m pip install --upgrade pip
         "neuron_0": 49,
         "neuron_1": 25,
         "neuron_2": 89,
@@ -256,7 +259,6 @@ if __name__ == "__main__":
         "dropout_2": 0.6310550702551022,
     }
     cfg = {
-        "cv": 10,
         "shuffle": True,
         "random_state": 21,
         "mask_value": -99,
