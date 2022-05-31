@@ -1,7 +1,7 @@
 # An End-to-End Pipeline for Uncertainty Quantification and Remaining Useful Life Estimation: An Application on Aircraft Engines
 
-![MIT License](https://img.shields.io/github/license/MariosKef/automated_rul?style=plastic) 
-[![Python 3.8.8](https://img.shields.io/badge/python-3.8.8-green.svg?style=plastic)](https://www.python.org/downloads/release/python-388/)
+![MIT License](https://img.shields.io/github/license/MariosKef/RULe?style=plastic) 
+[![Python 3.8](https://img.shields.io/badge/python-3.8-green.svg?style=plastic)](https://www.python.org/downloads/release/python-388/)
 
 
 ## Introduction
@@ -33,26 +33,26 @@ Activate the environment:
 
 Install the requirements:
 
-```python3.8 -m pip install -r requirements.txt```
+```python -m pip install -r requirements.txt```
 
 Install locally to work on your own version:
 
 ```cd ~/rule```
 
-```python3.8 -m pip install -e .```
+```python -m pip install -e .```
 
 ## Usage
 * For the hyperparameter optimization (HPO), run:
 
 ``` cd ./RULe ```
 
-``` python3 main.py ``` (note: be sure to update the ```log_file``` in the contructor of mipego inside the main.py with the path of your choice and the ```file``` variable for the results file in the objective.py)
+``` python main.py ``` (note: be sure to update the ```log_file``` in the contructor of mipego inside the main.py with the path of your choice and the ```file``` variable for the results file in the objective.py)
 
 * For the training of the full model, run:
 
 ``` cd ./RULe ```
 
-``` python3 model_training_full.py 100 ``` (note: be sure to update the ```net_cfg``` with the cfg of your choice from the HPO (previous step). The extra command line argument (here 100) indicates the number of training epochs.)
+``` python model_training_full.py 100 ``` (note: be sure to update the ```net_cfg``` with the cfg of your choice from the HPO (previous step). The extra command line argument (here 100) indicates the number of training epochs.)
 
 ## Acknowledgements 
 This work is part of the research programme Smart Industry SI2016 with project name CIMPLO and project number 15465, which is partly financed by the Netherlands Organisation for Scientific Research (NWO).

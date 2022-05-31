@@ -142,17 +142,17 @@ def load_data():
     column_names = [id_col, time_col] + feature_cols
 
     train_x_orig = pd.read_csv(
-        "./DataSets/CMAPSS/train_FD001.csv", header=None, sep="\s+", decimal="."
+        "../DataSets/CMAPSS/train_FD001.csv", header=None, sep="\s+", decimal="."
     )
     train_x_orig.columns = column_names
 
     test_x_orig = pd.read_csv(
-        "./DataSets/CMAPSS/test_FD001.csv", header=None, sep="\s+", decimal="."
+        "../DataSets/CMAPSS/test_FD001.csv", header=None, sep="\s+", decimal="."
     )
     test_x_orig.columns = column_names
 
     test_y_orig = pd.read_csv(
-        "./DataSets/CMAPSS/RUL_FD001.csv", header=None, names=["T"]
+        "../DataSets/CMAPSS/RUL_FD001.csv", header=None, names=["T"]
     )
 
     # Make engine numbers and days zero-indexed
