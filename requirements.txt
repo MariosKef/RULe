@@ -14,3 +14,4 @@ keras==2.6.0
 tqdm==4.59.0
 protobuf==3.19.0
 mipego==2.0.0
+tabulate==0.8.9
