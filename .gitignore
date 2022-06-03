@@ -35,3 +35,5 @@ LSTM/
 Experiment.log.csv
 backup_results/ 
 mipego_multi/
+GRU/
+Harmonic_Mean_Results/

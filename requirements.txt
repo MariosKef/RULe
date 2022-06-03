@@ -1,0 +1,16 @@
+deap==1.3.1
+dill==0.3.4
+GPUtil==1.4.0
+joblib==1.0.1
+matplotlib==3.3.4
+numpy==1.19.5
+pandas==1.2.3
+pyDOE==0.3.8
+scikit_learn==1.1.1
+scipy==1.6.1
+six==1.15.0
+tensorflow==2.6.0
+keras==2.6.0
+tqdm==4.59.0
+protobuf==3.19.0
+mipego==2.0.0
