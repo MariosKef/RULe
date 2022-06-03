@@ -45,7 +45,6 @@ def obj_function(net_cfg, cfg=None):
 
     if cfg == None:
         cfg = {
-            "cv": 10,
             "shuffle": True,
             "random_state": 21,
             "mask_value": -99,
@@ -86,7 +85,7 @@ def obj_function(net_cfg, cfg=None):
     train_all = []
     test_all = []
 
-    file = "new_results_single_obj_dataset_1_2_3_retake"
+    file = "results"
     columns = [
         "rmse_train",
         "mae_train",

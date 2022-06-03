@@ -34,7 +34,7 @@ class obj_func(object):
     def __call__(self, cfg):
         global reserved_gpus
         print(f" Reserved GPUs: {reserved_gpus}")
-        available_gpus = gp.getAvailable(limit=10, excludeID=reserved_gpus)
+        available_gpus = gp.getAvailable(limit=10, excludeID=reserved_gpus)  # IMPORTANT!
         print(f"available gpus {available_gpus}")
         gpu = np.random.choice(available_gpus, replace=False)
         print(f" selected gpu:{gpu}")
@@ -172,7 +172,7 @@ def main():
         n_job=10,
         verbose=True,
         random_seed=42,
-        logger="log_file_single_objective_dataset_1_2_3_retake.txt",
+        logger="log_file.txt",
         eval_type="dict",
     )
 
